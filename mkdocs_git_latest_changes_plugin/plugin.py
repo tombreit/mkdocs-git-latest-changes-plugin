@@ -160,7 +160,7 @@ class GitLatestChangesPlugin(BasePlugin):
     """
  
     def on_page_markdown(
-        self, markdown: str, page: Page, config: config_options.Config, **kwargs
+        self, markdown: str, page: Page, config, **kwargs
     ) -> str:
 
         marker = "{{ latest_changes }}"
