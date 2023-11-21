@@ -1,10 +1,15 @@
 [build-system]
-requires = ["setuptools>=61.0.0", "wheel"]
+requires = [
+    "setuptools>=61.0.0",
+    "setuptools-scm>=8.0",
+    "wheel"
+]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "mkdocs-git-latest-changes-plugin"
-version = "0.0.1"
+# version = "0.0.1"
+dynamic = ["version"]
 description = "MkDocs plugin that allows you to display a list of recently modified pages from the Git log"
 authors = [{name = "Thomas Breitner", email = "mail@thms.de"},]
 license = {file = "LICENSE"}
@@ -30,3 +35,5 @@ Homepage = "https://github.com/tombreit/mkdocs-git-latest-changes-plugin"
 Documentation = "https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/README.md"
 Repository = "https://github.com/tombreit/mkdocs-git-latest-changes-plugin"
 Issues = "https://github.com/tombreit/mkdocs-git-latest-changes-plugin/issues"
+
+[tool.setuptools_scm]
