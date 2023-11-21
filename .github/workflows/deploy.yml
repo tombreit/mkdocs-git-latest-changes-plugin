@@ -38,6 +38,7 @@ jobs:
         python -m mypy mkdocs_git_latest_changes_plugin/
     - name: Deploy to github pages
       run: |
+        git pull
         python -m pip install .
         mkdocs gh-deploy --force
     - name: Build package
