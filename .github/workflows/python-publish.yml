@@ -1,16 +1,16 @@
-# This workflow will upload a Python Package using Twine when a release is created
+# This workflow will
+# * upload the Python Package using Twine when a release is created
+# * run mypy
+# * deploy to github pages
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python#publishing-to-package-registries
 
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
 
-name: Upload Python Package
+name: Deploy Python Package
 
 on:
-  release:
-    types: [published]
+  push
+  # release:
+  #   types: [published]
 
 permissions:
   contents: read
@@ -28,8 +28,12 @@ jobs:
         python-version: '3.11'
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip setuptools
+        python -m pip install --upgrade pip setuptools wheel
         pip install --upgrade build
+    - name: Check typing
+      run: |
+        pip install --upgrade mypy
+        python -m mypy mkdocs_git_latest_changes_plugin/
     - name: Build package
       run: python -m build
     - name: Publish package to TestPyPI
@@ -40,6 +44,10 @@ jobs:
     # - name: Publish package to TestPyPI
     #   uses: pypa/gh-action-pypi-publish@release/v1
     #   with:
-    #     repository_url: https://test.pypi.org/legacy/
+    #     repository-url: https://test.pypi.org/legacy/
     #     user: __token__
     #     password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+    - name: Deploy to github pages
+      run: | 
+        pip install mkdocs-git-latest-changes-plugin
+        mkdocs gh-deploy --force
