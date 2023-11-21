@@ -1,5 +1,7 @@
 # mkdocs-git-latest-changes-plugin
 
+MkDocs plugin that allows you to display a list of recently modified pages from the Git log
+
 ## Setup
 
 Install the plugin:
