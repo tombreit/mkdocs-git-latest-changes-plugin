@@ -128,8 +128,8 @@ def get_recent_changes(*, repo_url, repo_name):
             loginfo = f"{sanitize(loginfo)}"
             loginfo = json.loads(loginfo)
 
-            repo_commit_url = f"{get_remote_repo_url(repo_url, repo_name, branch, commit_hash=loginfo['hash_full'])}"
-            repo_file_url = f"{get_remote_repo_url(repo_url, repo_name, branch, filepath=file)}"
+            repo_commit_url = get_remote_repo_url(repo_url, repo_name, branch, commit_hash=loginfo['hash_full'])
+            repo_file_url = get_remote_repo_url(repo_url, repo_name, branch, filepath=file)
             
             # Dictionary insert order defines the result column order
             fileinfo = {
