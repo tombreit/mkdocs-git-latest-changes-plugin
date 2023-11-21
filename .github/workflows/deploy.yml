@@ -37,7 +37,9 @@ jobs:
         pip install --upgrade mypy mkdocs GitPython
         python -m mypy mkdocs_git_latest_changes_plugin/
     - name: Deploy to github pages
-      run: mkdocs gh-deploy --force
+      run: |
+        python -m pip install .
+        mkdocs gh-deploy --force
     - name: Build package
       run: python -m build
     - name: Publish package to PyPI
