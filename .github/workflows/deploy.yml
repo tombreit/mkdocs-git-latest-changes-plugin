@@ -8,9 +8,9 @@
 name: Deploy Python Package
 
 on:
-  # push
-  release:
-    types: [published]
+  push
+  # release:
+  #   types: [published]
 
 permissions:
   contents: read
@@ -36,21 +36,22 @@ jobs:
       run: |
         pip install --upgrade mypy mkdocs GitPython
         python -m mypy mkdocs_git_latest_changes_plugin/
-    - name: Deploy to github pages
-      run: |
-        git pull
-        python -m pip install .
-        mkdocs gh-deploy --force
-    - name: Build package
-      run: python -m build
-    - name: Publish package to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        user: __token__
-        password: ${{ secrets.PYPI_API_TOKEN }}
+    # - name: Build package
+    #   run: python -m build
+    # - name: Publish package to PyPI
+    #   uses: pypa/gh-action-pypi-publish@release/v1
+    #   with:
+    #     user: __token__
+    #     password: ${{ secrets.PYPI_API_TOKEN }}
     # - name: Publish package to TestPyPI
     #   uses: pypa/gh-action-pypi-publish@release/v1
     #   with:
     #     repository-url: https://test.pypi.org/legacy/
     #     user: __token__
     #     password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+    - name: Deploy to github pages
+      run: |
+        git config --list
+        git pull origin main
+        python -m pip install .
+        mkdocs gh-deploy --force
