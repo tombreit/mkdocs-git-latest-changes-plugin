@@ -32,7 +32,7 @@ jobs:
         pip install --upgrade build
     - name: Check typing
       run: |
-        pip install --upgrade mypy
+        pip install --upgrade mypy mkdocs GitPython
         python -m mypy mkdocs_git_latest_changes_plugin/
     - name: Build package
       run: python -m build
