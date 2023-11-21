@@ -8,9 +8,9 @@
 name: Deploy Python Package
 
 on:
-  push
-  # release:
-  #   types: [published]
+  # push
+  release:
+    types: [published]
 
 permissions:
   contents: read
