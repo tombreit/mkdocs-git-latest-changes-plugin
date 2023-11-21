@@ -36,6 +36,8 @@ jobs:
       run: |
         pip install --upgrade mypy mkdocs GitPython
         python -m mypy mkdocs_git_latest_changes_plugin/
+    - name: Deploy to github pages
+      run: mkdocs gh-deploy --force
     - name: Build package
       run: python -m build
     - name: Publish package to PyPI
@@ -49,7 +51,3 @@ jobs:
     #     repository-url: https://test.pypi.org/legacy/
     #     user: __token__
     #     password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-    - name: Deploy to github pages
-      run: | 
-        pip install --upgrade mkdocs-git-latest-changes-plugin
-        mkdocs gh-deploy --force
