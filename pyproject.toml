@@ -24,3 +24,9 @@ dependencies = [
 
 [project.entry-points."mkdocs.plugins"]
 "git-latest-changes" = "mkdocs_git_latest_changes_plugin.plugin:GitLatestChangesPlugin"
+
+[project.urls]
+Homepage = "https://github.com/tombreit/mkdocs-git-latest-changes-plugin"
+Documentation = "https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/README.md"
+Repository = "https://github.com/tombreit/mkdocs-git-latest-changes-plugin"
+Issues = "https://github.com/tombreit/mkdocs-git-latest-changes-plugin/issues"
