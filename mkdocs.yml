@@ -1,0 +1,3 @@
+site_name: mkdocs-git-latest-changes-plugin
+plugins:
+  - git-latest-changes
