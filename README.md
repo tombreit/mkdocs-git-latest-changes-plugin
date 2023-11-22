@@ -4,7 +4,7 @@ MkDocs plugin that allows you to display a list of recently modified pages from 
 
 ## Setup
 
-Install the plugin:
+Install the plugin [PyPI package](https://pypi.org/project/mkdocs-git-latest-changes-plugin/):
 
 ```bash
 pip install mkdocs-git-latest-changes-plugin
