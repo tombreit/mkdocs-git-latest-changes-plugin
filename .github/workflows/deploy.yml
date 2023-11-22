@@ -13,10 +13,10 @@ on:
   #   types: [published]
 
 permissions:
-  contents: read
+  contents: write
   pages: write
-  actions: write
-  deployments: write
+  # actions: write
+  # deployments: write
 
 jobs:
   deploy:
