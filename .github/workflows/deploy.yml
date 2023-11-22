@@ -51,4 +51,4 @@ jobs:
         git switch main
         git branch -a -v
         python -m pip install .
-        mkdocs gh-deploy --force
+        mkdocs gh-deploy --force --verbose
