@@ -25,7 +25,6 @@ https://tombreit.github.io/mkdocs-git-latest-changes-plugin/
 
 Use `{{ latest_changes }}` in your Markdown page(s) where the latest git changes should be inserted as a table.
 
-
 ## Hints
 
 - This plugin depends of having any commits in the current branch.
