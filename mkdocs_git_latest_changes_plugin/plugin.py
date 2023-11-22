@@ -121,7 +121,7 @@ def get_recent_changes(*, repo_url, repo_name):
         try:
             loginfo = g.log(
                 "-1",
-                '--pretty=format:{"timestamp": "%cd", "hash": "%h", "hash_full": "%H", "author": "%an", "message": "%s"}',
+                '--pretty=format:{"Timestamp": "%cd", "Hash": "%h", "hash_full": "%H", "Author": "%an", "Message": "%s"}',
                 "--date=format:%Y-%m-%d %H:%M:%S",
                 file
             )
@@ -133,11 +133,11 @@ def get_recent_changes(*, repo_url, repo_name):
             
             # Dictionary insert order defines the result column order
             fileinfo = {
-                "filepath": f"[{file}]({repo_file_url})" if repo_file_url else f"{file}"
+                "Filepath": f"[{file}]({repo_file_url})" if repo_file_url else f"{file}"
             }
             fileinfo.update(loginfo)
             fileinfo.update({
-                "hash": f"[{loginfo['hash']}]({repo_commit_url})" if repo_commit_url else f"{loginfo['hash']}",
+                "Hash": f"[{loginfo['Hash']}]({repo_commit_url})" if repo_commit_url else f"{loginfo['Hash']}",
             })
 
             # We do not need the full git hash any more
@@ -149,7 +149,7 @@ def get_recent_changes(*, repo_url, repo_name):
             log.info(msg)
             pass
     
-    loginfos = sorted(loginfos, key=itemgetter('timestamp'), reverse=True)
+    loginfos = sorted(loginfos, key=itemgetter('Timestamp'), reverse=True)
     return render_table(loginfos)
 
 
