@@ -8,7 +8,6 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mkdocs-git-latest-changes-plugin"
-# version = "0.0.1"
 dynamic = ["version"]
 description = "MkDocs plugin that allows you to display a list of recently modified pages from the Git log"
 authors = [{name = "Thomas Breitner", email = "mail@thms.de"},]
@@ -31,7 +30,7 @@ dependencies = [
 "git-latest-changes" = "mkdocs_git_latest_changes_plugin.plugin:GitLatestChangesPlugin"
 
 [project.urls]
-Homepage = "https://github.com/tombreit/mkdocs-git-latest-changes-plugin"
+Homepage = "https://tombreit.github.io/mkdocs-git-latest-changes-plugin/"
 Documentation = "https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/README.md"
 Repository = "https://github.com/tombreit/mkdocs-git-latest-changes-plugin"
 Issues = "https://github.com/tombreit/mkdocs-git-latest-changes-plugin/issues"
