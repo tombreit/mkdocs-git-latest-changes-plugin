@@ -44,9 +44,11 @@ jobs:
     #     repository-url: https://test.pypi.org/legacy/
     #     user: __token__
     #     password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-    # - name: Deploy to github pages
-    #   run: |
-    #     git pull origin main
-    #     git switch main
-    #     python -m pip install .
-    #     mkdocs gh-deploy --force
+    - name: Deploy to github pages
+      run: |
+        git pull origin main
+        git branch -a -v
+        git switch main
+        git branch -a -v
+        python -m pip install .
+        mkdocs gh-deploy --force
