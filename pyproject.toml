@@ -13,7 +13,7 @@ description = "MkDocs plugin that allows you to display a list of recently modif
 authors = [{name = "Thomas Breitner", email = "mail@thms.de"},]
 license = {file = "LICENSE"}
 readme = "README.md"
-requires-python = ">=3.9.2"
+requires-python = ">=3.7"
 classifiers = [
     "Framework :: MkDocs",
     "Topic :: Documentation",
