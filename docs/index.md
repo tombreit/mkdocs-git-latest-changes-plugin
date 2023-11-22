@@ -9,6 +9,8 @@ MkDocs plugin that allows you to display a list of recently modified pages from 
 
 ### Code
 
+    # docs_dir/file.md
+
     {{ latest changes }}
 
 ### Rendered
