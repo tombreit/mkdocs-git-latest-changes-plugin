@@ -22,7 +22,7 @@ classifiers = [
     "Development Status :: 3 - Alpha",
 ]
 dependencies = [
-    "mkdocs>=1.4",
+    "mkdocs>=1.5",
     "GitPython",
 ]
 
