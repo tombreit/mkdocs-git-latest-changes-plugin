@@ -10,6 +10,7 @@ MkDocs plugin that allows you to display a list of recently modified pages from 
 
 - This plugin depends of having any commits in the current branch.
 - For linked git commit hashes and filenames, the MkDocs config variable `repo_url` must be set and point to a Github or Gitlab repository.
+- Relax warnings with `--no-strict` (via MkDocs [strict configuration](https://www.mkdocs.org/user-guide/configuration/#strict), [cli](https://www.mkdocs.org/user-guide/cli/)), e.g. if a expected file is not in the git working tree.
 - Log level: Request debug information for this plugin via MkDocs `--verbose` command line flag.
 
 ## Latest changes demo

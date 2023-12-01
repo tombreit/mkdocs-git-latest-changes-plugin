@@ -8,6 +8,7 @@ from operator import itemgetter
 from pathlib import Path
 
 from git import Repo, Git
+from git.exc import GitCommandError
 
 from mkdocs.plugins import BasePlugin, get_plugin_logger
 from mkdocs.config import config_options
@@ -143,11 +144,18 @@ def get_recent_changes(*, repo_url, repo_name):
             # We do not need the full git hash any more
             del fileinfo['hash_full']
             loginfos.append(fileinfo)
+        except GitCommandError as git_command_error:
+            template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+            msg = template.format(type(git_command_error).__name__, git_command_error.args)
+            # Only log a warning to allow running via `--no-strict`
+            log.warning(msg)
         except Exception as error:
-            msg = f"Exception while trying to get git loginfo: {error}"
-            # raise PluginError(msg)
-            log.info(msg)
-            pass
+            # Trigger a MkDocs BuildError via raising a PluginError. Causes
+            # MkDocs to abort, even if running in no-strict mode.
+            template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+            msg = template.format(type(error).__name__, error.args)
+            log.warning(msg)
+            raise PluginError(msg)
     
     loginfos = sorted(loginfos, key=itemgetter('Timestamp'), reverse=True)
     return render_table(loginfos)
