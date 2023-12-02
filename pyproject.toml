@@ -52,3 +52,6 @@ Repository = "https://github.com/tombreit/mkdocs-git-latest-changes-plugin"
 Issues = "https://github.com/tombreit/mkdocs-git-latest-changes-plugin/issues"
 
 [tool.setuptools_scm]
+
+[[tool.mypy.overrides]]
+module = "mkdocs_git_latest_changes_plugin"
