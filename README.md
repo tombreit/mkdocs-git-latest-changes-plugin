@@ -10,6 +10,7 @@ MkDocs plugin that allows you to display a list of recently modified pages from 
 
 [![REUSE status](https://api.reuse.software/badge/github.com/tombreit/mkdocs-git-latest-changes-plugin)](https://api.reuse.software/info/github.com/tombreit/mkdocs-git-latest-changes-plugin)
 [![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 ## Setup
 

@@ -27,3 +27,8 @@ jobs:
           run: reuse lint
         - name: Check typing
           run: python -m mypy mkdocs_git_latest_changes_plugin/
+        - name: Run black
+          uses: psf/black@stable
+          with:
+            options: "--check --verbose"
+            src: "./mkdocs_git_latest_changes_plugin/"
