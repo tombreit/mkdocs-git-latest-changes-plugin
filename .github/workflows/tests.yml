@@ -32,3 +32,7 @@ jobs:
           with:
             options: "--check --verbose"
             src: "./mkdocs_git_latest_changes_plugin/"
+        - name: Run ruff
+          uses: chartboost/ruff-action@v1
+          with:
+            src: "./mkdocs_git_latest_changes_plugin"
