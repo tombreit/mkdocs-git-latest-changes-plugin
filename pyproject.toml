@@ -18,7 +18,7 @@ name = "mkdocs-git-latest-changes-plugin"
 dynamic = ["version"]
 description = "MkDocs plugin that allows you to display a list of recently modified pages from the Git log"
 authors = [{name = "Thomas Breitner", email = "mail@thms.de"},]
-license = "MIT"
+license = {text = "MIT"}
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
