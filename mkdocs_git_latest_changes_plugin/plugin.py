@@ -52,7 +52,7 @@ def get_remote_repo_url(repo_url, repo_name, branch, commit_hash=None, filepath=
         "gitlab": {
             "commit_spacer": "/-/commit/",
             "file_spacer": f"/-/blob/{branch}/",
-        }
+        },
     }
 
     if repo_name not in supported_remote_repos.keys():
@@ -61,14 +61,16 @@ def get_remote_repo_url(repo_url, repo_name, branch, commit_hash=None, filepath=
     if commit_hash:
         repo_url = f"{repo_url}{supported_remote_repos[repo_name]['commit_spacer']}{commit_hash}"
     elif filepath:
-        repo_url = f"{repo_url}{supported_remote_repos[repo_name]['file_spacer']}{filepath}"
+        repo_url = (
+            f"{repo_url}{supported_remote_repos[repo_name]['file_spacer']}{filepath}"
+        )
 
     return repo_url
 
 
 def render_table(loginfos: list[dict]) -> str:
     """
-    Convert list of dicts with git changelog entries to markdown table: 
+    Convert list of dicts with git changelog entries to markdown table:
 
     | filepath                         | timestamp           | hash                      | author   | message            |
     | -------------------------------- | ------------------- | ------------------------- | -------- | ------------------ |
@@ -81,7 +83,9 @@ def render_table(loginfos: list[dict]) -> str:
     for index, loginfo in enumerate(loginfos):
         if index == 0:
             column_header_row = [column_header for column_header in loginfo.keys()]
-            separator_row = ['-' * len(column_header) for column_header in column_header_row]
+            separator_row = [
+                "-" * len(column_header) for column_header in column_header_row
+            ]
             data_row = [cell for cell in loginfo.values()]
             rows.extend([column_header_row] + [separator_row] + [data_row])
         else:
@@ -94,7 +98,7 @@ def render_table(loginfos: list[dict]) -> str:
     for row in rows:
         markdown_row = f"{col_separator}{col_separator.join(row)}{col_separator}"
         markdown_rows.append(markdown_row)
-    
+
     markdown_table = "\n".join(markdown_rows)
 
     return markdown_table
@@ -103,7 +107,9 @@ def render_table(loginfos: list[dict]) -> str:
 def sanitize(string: str) -> str:
     # log.debug(f"sanitize: `{string}`...")
     # Strip unicode control characters from string:
-    sanitized_string = "".join(ch for ch in string if unicodedata.category(ch)[0]!="C")
+    sanitized_string = "".join(
+        ch for ch in string if unicodedata.category(ch)[0] != "C"
+    )
 
     return str(sanitized_string)
 
@@ -115,7 +121,7 @@ def get_recent_changes(*, repo_url, repo_name):
     g.init()
 
     log.debug(f"Initialized repo `{repo}`, branch `{branch}`...")
-    
+
     files = g.ls_files()
     files = files.split("\n")
 
@@ -128,29 +134,39 @@ def get_recent_changes(*, repo_url, repo_name):
                 "-1",
                 '--pretty=format:{"Timestamp": "%cd", "Hash": "%h", "hash_full": "%H", "Author": "%an", "Message": "%s"}',
                 "--date=format:%Y-%m-%d %H:%M:%S",
-                file
+                file,
             )
             loginfo = f"{sanitize(loginfo)}"
             loginfo = json.loads(loginfo)
 
-            repo_commit_url = get_remote_repo_url(repo_url, repo_name, branch, commit_hash=loginfo['hash_full'])
-            repo_file_url = get_remote_repo_url(repo_url, repo_name, branch, filepath=file)
-            
+            repo_commit_url = get_remote_repo_url(
+                repo_url, repo_name, branch, commit_hash=loginfo["hash_full"]
+            )
+            repo_file_url = get_remote_repo_url(
+                repo_url, repo_name, branch, filepath=file
+            )
+
             # Dictionary insert order defines the result column order
             fileinfo = {
                 "Filepath": f"[{file}]({repo_file_url})" if repo_file_url else f"{file}"
             }
             fileinfo.update(loginfo)
-            fileinfo.update({
-                "Hash": f"[{loginfo['Hash']}]({repo_commit_url})" if repo_commit_url else f"{loginfo['Hash']}",
-            })
+            fileinfo.update(
+                {
+                    "Hash": f"[{loginfo['Hash']}]({repo_commit_url})"
+                    if repo_commit_url
+                    else f"{loginfo['Hash']}",
+                }
+            )
 
             # We do not need the full git hash any more
-            del fileinfo['hash_full']
+            del fileinfo["hash_full"]
             loginfos.append(fileinfo)
         except GitCommandError as git_command_error:
             template = "An exception of type {0} occurred. Arguments:\n{1!r}"
-            msg = template.format(type(git_command_error).__name__, git_command_error.args)
+            msg = template.format(
+                type(git_command_error).__name__, git_command_error.args
+            )
             # Only log a warning to allow running via `--no-strict`
             log.warning(msg)
         except Exception as error:
@@ -160,8 +176,8 @@ def get_recent_changes(*, repo_url, repo_name):
             msg = template.format(type(error).__name__, error.args)
             log.warning(msg)
             raise PluginError(msg)
-    
-    loginfos = sorted(loginfos, key=itemgetter('Timestamp'), reverse=True)
+
+    loginfos = sorted(loginfos, key=itemgetter("Timestamp"), reverse=True)
     return render_table(loginfos)
 
 
@@ -170,15 +186,14 @@ class GitLatestChangesPlugin(BasePlugin):
     Mkdocs plugin to render latest changes from Git.
     Reference: https://www.mkdocs.org/user-guide/plugins
     """
- 
-    def on_page_markdown(
-        self, markdown: str, page: Page, config, **kwargs
-    ) -> str:
 
+    def on_page_markdown(self, markdown: str, page: Page, config, **kwargs) -> str:
         marker = "{{ latest_changes }}"
         if marker in markdown:
             log.debug(f"Found latest_changes marker in {page.file.src_uri}")
-            latest_changes = get_recent_changes(repo_url=config.repo_url, repo_name=config.repo_name)
+            latest_changes = get_recent_changes(
+                repo_url=config.repo_url, repo_name=config.repo_name
+            )
             markdown = markdown.replace(marker, latest_changes)
 
         return markdown
