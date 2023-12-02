@@ -34,8 +34,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-codeqa = [
+dev = [
+    "pre-commit",
     "reuse",
+    "mypy",
+    "isort",
+    "black",
 ]
 
 [project.entry-points."mkdocs.plugins"]
