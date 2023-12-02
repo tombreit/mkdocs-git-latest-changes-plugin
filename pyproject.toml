@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Thomas Breitner
+#
+# SPDX-License-Identifier: MIT
+
 [build-system]
 requires = [
     "setuptools>=61.0.0",
@@ -6,12 +10,15 @@ requires = [
 ]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.packages.find]
+where = ["mkdocs_git_latest_changes_plugin"]
+
 [project]
 name = "mkdocs-git-latest-changes-plugin"
 dynamic = ["version"]
 description = "MkDocs plugin that allows you to display a list of recently modified pages from the Git log"
 authors = [{name = "Thomas Breitner", email = "mail@thms.de"},]
-license = {file = "LICENSE"}
+license = "CC0-1.0 AND MIT"
 readme = "README.md"
 requires-python = ">=3.7"
 classifiers = [
@@ -24,6 +31,11 @@ classifiers = [
 dependencies = [
     "mkdocs>=1.5",
     "GitPython",
+]
+
+[project.optional-dependencies]
+codeqa = [
+    "reuse",
 ]
 
 [project.entry-points."mkdocs.plugins"]

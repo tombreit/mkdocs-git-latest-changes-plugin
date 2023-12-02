@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Thomas Breitner
+#
+# SPDX-License-Identifier: MIT
+
 """
 MkDocs Plugin
 """

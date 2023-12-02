@@ -1,0 +1,28 @@
+# SPDX-FileCopyrightText: 2023 Thomas Breitner
+#
+# SPDX-License-Identifier: CC0-1.0
+
+name: Test suites
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+    reuse:
+      runs-on: ubuntu-22.04
+      steps:
+        - uses: actions/checkout@v4
+        - name: Set up Python
+          uses: actions/setup-python@v4
+          with:
+            python-version: 3.7
+        - name: Install codeqa dependencies
+          run: |
+            python -m pip install --upgrade pip setuptools wheel
+            python -m pip pip install -e .[codeqa]
+        - name: Test REUSE compliance
+          run: |
+            reuse lint
