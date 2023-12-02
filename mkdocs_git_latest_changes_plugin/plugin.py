@@ -3,7 +3,8 @@
 # SPDX-License-Identifier: MIT
 
 """
-MkDocs Plugin
+MkDocs Plugin plugin that allows you to display a list of recently
+modified pages from the Git log.
 """
 
 import json
@@ -15,7 +16,6 @@ from git import Repo, Git
 from git.exc import GitCommandError
 
 from mkdocs.plugins import BasePlugin, get_plugin_logger
-from mkdocs.config import config_options
 from mkdocs.structure.pages import Page
 from mkdocs.exceptions import PluginError
 
