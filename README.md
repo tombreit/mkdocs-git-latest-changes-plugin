@@ -9,6 +9,7 @@ SPDX-License-Identifier: MIT
 MkDocs plugin that allows you to display a list of recently modified pages from the Git log
 
 [![REUSE status](https://api.reuse.software/badge/github.com/tombreit/mkdocs-git-latest-changes-plugin)](https://api.reuse.software/info/github.com/tombreit/mkdocs-git-latest-changes-plugin)
+[![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
 
 ## Setup
 
