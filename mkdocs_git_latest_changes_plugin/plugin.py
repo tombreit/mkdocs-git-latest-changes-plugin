@@ -7,18 +7,17 @@ MkDocs Plugin plugin that allows you to display a list of recently
 modified pages from the Git log.
 """
 
+
 import json
 import unicodedata
 from operator import itemgetter
 from pathlib import Path
 
-from git import Repo, Git
+from git import Git, Repo
 from git.exc import GitCommandError
-
+from mkdocs.exceptions import PluginError
 from mkdocs.plugins import BasePlugin, get_plugin_logger
 from mkdocs.structure.pages import Page
-from mkdocs.exceptions import PluginError
-
 
 log = get_plugin_logger(__name__)
 

@@ -38,8 +38,6 @@ dev = [
     "pre-commit",
     "reuse",
     "mypy",
-    "isort",
-    "black",
     "ruff",
 ]
 
@@ -56,3 +54,7 @@ Issues = "https://github.com/tombreit/mkdocs-git-latest-changes-plugin/issues"
 
 [[tool.mypy.overrides]]
 module = "mkdocs_git_latest_changes_plugin"
+
+[tool.ruff]
+src = ["mkdocs_git_latest_changes_plugin"]
+target-version = "py311"
