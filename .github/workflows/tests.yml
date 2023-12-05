@@ -9,9 +9,11 @@ on:
     branches:
       - main
   pull_request:
+  workflow_call:
 
 jobs:
     tests:
+      name: Run some tests, checks, formatters
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v4

@@ -15,8 +15,12 @@ permissions:
   pages: write
 
 jobs:
-  deploy:
 
+  test:
+    uses: ./.github/workflows/tests.yml
+
+  deploy:
+    name: Build python package, upload to PyPI, update GH pages
     runs-on: ubuntu-latest
 
     steps:
