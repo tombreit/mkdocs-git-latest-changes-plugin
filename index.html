@@ -28,8 +28,27 @@
 
                 <!-- Expanded navigation -->
                 <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="navitem active">
+                                <a href="." class="nav-link">Home</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="test/" class="nav-link">Test</a>
+                            </li>
+                        </ul>
 
                     <ul class="nav navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a rel="prev" class="nav-link disabled">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="test/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
                             <li class="nav-item">
                                 <a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/edit/master/docs/index.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
                             </li>
@@ -68,6 +87,12 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
+<!--
+SPDX-FileCopyrightText: 2023 Thomas Breitner
+
+SPDX-License-Identifier: MIT
+-->
+
 <h1 id="mkdocs-git-latest-changes-plugin">mkdocs-git-latest-changes-plugin</h1>
 <p>MkDocs plugin that allows you to display a list of recently modified pages from the Git log</p>
 <ul>
@@ -79,6 +104,7 @@
 <ul>
 <li>This plugin depends of having any commits in the current branch.</li>
 <li>For linked git commit hashes and filenames, the MkDocs config variable <code>repo_url</code> must be set and point to a Github or Gitlab repository.</li>
+<li>Relax warnings with <code>--no-strict</code> (via MkDocs <a href="https://www.mkdocs.org/user-guide/configuration/#strict">strict configuration</a>, <a href="https://www.mkdocs.org/user-guide/cli/">cli</a>), e.g. if a expected file is not in the git working tree.</li>
 <li>Log level: Request debug information for this plugin via MkDocs <code>--verbose</code> command line flag.</li>
 </ul>
 <h2 id="latest-changes-demo">Latest changes demo</h2>
@@ -101,60 +127,88 @@
 </thead>
 <tbody>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/docs/index.md">docs/index.md</a></td>
-<td>2023-11-26 09:17:45</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/e0336c4a017bdf98a8f4f583fe273762b350cecb">e0336c4</a></td>
-<td>Thomas Breitner</td>
-<td>Fixed code example to match the current marker/placeholder string, prevent code example to be replaced by plugin</td>
-</tr>
-<tr>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/pyproject.toml">pyproject.toml</a></td>
-<td>2023-11-22 16:51:11</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/1f69c89e6de7fc7ce10fc79aad04deee6cd5cbd5">1f69c89</a></td>
+<td>2023-12-13 19:54:19</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/3db94888c86b1e0165a1d8776779ed1acb70259a">3db9488</a></td>
 <td>Thomas Breitner</td>
-<td>Lowered Python requirement</td>
+<td>Fixed ModuleNotFoundError via setuptools autodiscover</td>
 </tr>
 <tr>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/.github/workflows/deploy.yml">.github/workflows/deploy.yml</a></td>
-<td>2023-11-22 12:32:38</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/c4206fa6cb22e5ac73d56efe038ed9776bbe1574">c4206fa</a></td>
+<td>2023-12-05 12:10:00</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/32f8fb2087cb0fbbafc370e47c17421ea822da99">32f8fb2</a></td>
 <td>Thomas Breitner</td>
-<td>Debug mkdocs gh-deploy run</td>
+<td>Test reusable workflow</td>
 </tr>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/mkdocs_git_latest_changes_plugin/plugin.py">mkdocs_git_latest_changes_plugin/plugin.py</a></td>
-<td>2023-11-22 12:27:54</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/ed069543d897abee1df1c835a03e63cef030f0c1">ed06954</a></td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/.github/workflows/tests.yml">.github/workflows/tests.yml</a></td>
+<td>2023-12-05 12:10:00</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/32f8fb2087cb0fbbafc370e47c17421ea822da99">32f8fb2</a></td>
 <td>Thomas Breitner</td>
-<td>Capitalized column headers</td>
+<td>Test reusable workflow</td>
 </tr>
 <tr>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/README.md">README.md</a></td>
-<td>2023-11-22 10:57:33</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/ecc102aff7348a2568dfed83db9637c86a7c3cbf">ecc102a</a></td>
+<td>2023-12-05 12:09:18</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/59d7a01d4f2d87ffb07532c998963c274763f685">59d7a01</a></td>
 <td>Thomas Breitner</td>
-<td>Mention PyPI package</td>
+<td>Removed duplicate hints in README and docs</td>
 </tr>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/mkdocs.yml">mkdocs.yml</a></td>
-<td>2023-11-22 10:23:14</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/80c9f975817ffdc2f09fa0e7b2b6a25a565a254a">80c9f97</a></td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/.pre-commit-config.yaml">.pre-commit-config.yaml</a></td>
+<td>2023-12-04 14:54:48</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/787d0a4d057f5ef342d096283e9e9462a2a82218">787d0a4</a></td>
 <td>Thomas Breitner</td>
-<td>Demonstrate linked filenames and commit hashes</td>
+<td>Swapped black and isort for ruff</td>
+</tr>
+<tr>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/mkdocs_git_latest_changes_plugin/plugin.py">mkdocs_git_latest_changes_plugin/plugin.py</a></td>
+<td>2023-12-04 14:54:48</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/787d0a4d057f5ef342d096283e9e9462a2a82218">787d0a4</a></td>
+<td>Thomas Breitner</td>
+<td>Swapped black and isort for ruff</td>
 </tr>
 <tr>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/.gitignore">.gitignore</a></td>
-<td>2023-11-21 23:10:23</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/a9686e9bc46fae9bb6be4d44ba05830d225bfc49">a9686e9</a></td>
+<td>2023-12-02 19:16:43</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/a2981f6cfe912e3c9bd22fdaed10dd7f8194b9be">a2981f6</a></td>
 <td>Thomas Breitner</td>
-<td>Ignore gh-pages dist site directory</td>
+<td>REUSE-compliance</td>
 </tr>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/LICENSE">LICENSE</a></td>
-<td>2023-11-21 18:15:13</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/158e496f7d86ff738c8ff0fe441c25d755d25c7c">158e496</a></td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/LICENSES/CC0-1.0.txt">LICENSES/CC0-1.0.txt</a></td>
+<td>2023-12-02 19:16:43</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/a2981f6cfe912e3c9bd22fdaed10dd7f8194b9be">a2981f6</a></td>
 <td>Thomas Breitner</td>
-<td>Initial commit</td>
+<td>REUSE-compliance</td>
+</tr>
+<tr>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/LICENSES/MIT.txt">LICENSES/MIT.txt</a></td>
+<td>2023-12-02 19:16:43</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/a2981f6cfe912e3c9bd22fdaed10dd7f8194b9be">a2981f6</a></td>
+<td>Thomas Breitner</td>
+<td>REUSE-compliance</td>
+</tr>
+<tr>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/docs/index.md">docs/index.md</a></td>
+<td>2023-12-02 19:16:43</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/a2981f6cfe912e3c9bd22fdaed10dd7f8194b9be">a2981f6</a></td>
+<td>Thomas Breitner</td>
+<td>REUSE-compliance</td>
+</tr>
+<tr>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/docs/test.md">docs/test.md</a></td>
+<td>2023-12-02 19:16:43</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/a2981f6cfe912e3c9bd22fdaed10dd7f8194b9be">a2981f6</a></td>
+<td>Thomas Breitner</td>
+<td>REUSE-compliance</td>
+</tr>
+<tr>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/mkdocs.yml">mkdocs.yml</a></td>
+<td>2023-12-02 19:16:43</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/a2981f6cfe912e3c9bd22fdaed10dd7f8194b9be">a2981f6</a></td>
+<td>Thomas Breitner</td>
+<td>REUSE-compliance</td>
 </tr>
 <tr>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/mkdocs_git_latest_changes_plugin/__init__.py">mkdocs_git_latest_changes_plugin/<strong>init</strong>.py</a></td>
@@ -226,5 +280,5 @@
 
 <!--
 MkDocs version : 1.5.3
-Build Date UTC : 2023-11-26 08:21:06.635256+00:00
+Build Date UTC : 2023-12-13 18:56:21.159992+00:00
 -->
