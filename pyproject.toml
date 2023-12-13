@@ -10,9 +10,6 @@ requires = [
 ]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools.packages.find]
-where = ["mkdocs_git_latest_changes_plugin"]
-
 [project]
 name = "mkdocs-git-latest-changes-plugin"
 dynamic = ["version"]
@@ -28,6 +25,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Development Status :: 3 - Alpha",
 ]
+
 dependencies = [
     "mkdocs>=1.5",
     "GitPython",
@@ -50,7 +48,13 @@ Documentation = "https://github.com/tombreit/mkdocs-git-latest-changes-plugin/bl
 Repository = "https://github.com/tombreit/mkdocs-git-latest-changes-plugin"
 Issues = "https://github.com/tombreit/mkdocs-git-latest-changes-plugin/issues"
 
+[tool.setuptools]
+license-files = ["LICENSES/*.txt"]
+
 [tool.setuptools_scm]
+
+[tool.setuptools.packages.find]
+# Use setuptools autodiscover
 
 [[tool.mypy.overrides]]
 module = "mkdocs_git_latest_changes_plugin"
