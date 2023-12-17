@@ -14,6 +14,11 @@ MkDocs plugin that allows you to display a list of recently modified pages from 
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 ![pre-commit enabled](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)
 
+## Demo & Docs
+
+<https://tombreit.github.io/mkdocs-git-latest-changes-plugin/>
+
+
 ## Setup
 
 Install the plugin [PyPI package](https://pypi.org/project/mkdocs-git-latest-changes-plugin/):
@@ -32,7 +37,3 @@ plugins:
 ## Usage
 
 Use `{{ latest_changes }}` in your Markdown page(s) where the latest git changes should be inserted as a table.
-
-## Demo & Docs
-
-<https://tombreit.github.io/mkdocs-git-latest-changes-plugin/>
