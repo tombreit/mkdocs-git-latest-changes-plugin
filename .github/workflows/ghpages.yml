@@ -5,13 +5,14 @@
 name: Publish github pages
 
 on:
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
   pull_request:
   workflow_call:
 
 permissions:
+  # "contents: write" Currently necessary due to gh-pages deployment
   contents: write
   pages: write
 

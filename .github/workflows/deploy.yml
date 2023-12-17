@@ -9,11 +9,6 @@ on:
   release:
     types: [published]
 
-# permissions:
-  # "contents: write" Currently necessary due to gh-pages deployment
-  # contents: write
-  # pages: write
-
 jobs:
 
   test:
