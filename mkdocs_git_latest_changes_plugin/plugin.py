@@ -11,24 +11,37 @@ modified pages from the Git log.
 import json
 import unicodedata
 from operator import itemgetter
-from pathlib import Path
 
-from git import Git, Repo
+from git import Repo
 from git.exc import GitCommandError, InvalidGitRepositoryError
+
 from mkdocs.exceptions import PluginError
 from mkdocs.plugins import BasePlugin, get_plugin_logger
+from mkdocs.structure.files import Files
 from mkdocs.structure.pages import Page
+from mkdocs.config.defaults import MkDocsConfig
+from mkdocs.config.base import Config
+
+from typing import Optional
+
 
 log = get_plugin_logger(__name__)
 
 
-def get_error_message(error):
+def get_error_message(error: Exception) -> str:
     template = "An exception of type {0} occurred. Arguments:\n{1!r}"
     msg = template.format(type(error).__name__, error.args)
     return msg
 
 
-def get_remote_repo_url(repo_url, repo_name, branch, commit_hash=None, filepath=None):
+def get_remote_repo_url(
+    *,
+    repo_url: str,
+    repo_name: str,
+    branch: str,
+    commit_hash: str = "",
+    filepath: str = "",
+) -> Optional[str]:
     """
     Build URL for a given git hash or file and a repository. Currently only
     for Github and Gitlab.
@@ -61,7 +74,7 @@ def get_remote_repo_url(repo_url, repo_name, branch, commit_hash=None, filepath=
     }
 
     if repo_name not in supported_remote_repos.keys():
-        return
+        return None
 
     if commit_hash:
         repo_url = f"{repo_url}{supported_remote_repos[repo_name]['commit_spacer']}{commit_hash}"
@@ -73,7 +86,7 @@ def get_remote_repo_url(repo_url, repo_name, branch, commit_hash=None, filepath=
     return repo_url
 
 
-def render_table(loginfos: list[dict]) -> str:
+def render_table(loginfos: list[dict[str, str]]) -> str:
     """
     Convert list of dicts with git changelog entries to markdown table:
 
@@ -84,7 +97,7 @@ def render_table(loginfos: list[dict]) -> str:
     """
 
     # Build an internal representation with latest changes data
-    rows: list = []
+    rows: list[list[str]] = []
     for index, loginfo in enumerate(loginfos):
         if index == 0:
             column_header_row = [column_header for column_header in loginfo.keys()]
@@ -98,7 +111,7 @@ def render_table(loginfos: list[dict]) -> str:
             rows.append(data_row)
 
     # Convert the internal representation to markdown table
-    markdown_rows: list = []
+    markdown_rows: list[str] = []
     col_separator = " | "
     for row in rows:
         markdown_row = f"{col_separator}{col_separator.join(row)}{col_separator}"
@@ -119,20 +132,25 @@ def sanitize(string: str) -> str:
     return str(sanitized_string)
 
 
-def get_recent_changes(*, repo_url, repo_name):
+def get_recent_changes(*, repo_url: str, repo_name: str) -> str:
     try:
-        repo = Repo(Path.cwd())
+        repo = Repo()
         branch = repo.active_branch
-        g = Git(repo)
-        g.init()
+        git = repo.git
     except InvalidGitRepositoryError as invalid_repo_error:
         msg = get_error_message(invalid_repo_error)
         # Only log a warning to allow running via `--no-strict`
         log.warning(msg)
         return f"Warning: {msg}"
+    except Exception as error:
+        # Trigger a MkDocs BuildError via raising a PluginError. Causes
+        # MkDocs to abort, even if running in no-strict mode.
+        msg = get_error_message(error)
+        log.warning(msg)
+        raise PluginError(msg)
     else:
         log.debug(f"Initialized repo `{repo}`, branch `{branch}`...")
-        files = g.ls_files()
+        files = git.ls_files()
         files = files.split("\n")
 
     loginfos = []
@@ -140,7 +158,7 @@ def get_recent_changes(*, repo_url, repo_name):
         log.debug(f"Processing file `{file}`...")
 
         try:
-            loginfo = g.log(
+            loginfo = git.log(
                 "-1",
                 '--pretty=format:{"Timestamp": "%cd", "Hash": "%h", "hash_full": "%H", "Author": "%an", "Message": "%s"}',
                 "--date=format:%Y-%m-%d %H:%M:%S",
@@ -150,10 +168,13 @@ def get_recent_changes(*, repo_url, repo_name):
             loginfo = json.loads(loginfo)
 
             repo_commit_url = get_remote_repo_url(
-                repo_url, repo_name, branch, commit_hash=loginfo["hash_full"]
+                repo_url=repo_url,
+                repo_name=repo_name,
+                branch=branch,
+                commit_hash=loginfo["hash_full"],
             )
             repo_file_url = get_remote_repo_url(
-                repo_url, repo_name, branch, filepath=file
+                repo_url=repo_url, repo_name=repo_url, branch=branch, filepath=file
             )
 
             # Dictionary insert order defines the result column order
@@ -184,22 +205,33 @@ def get_recent_changes(*, repo_url, repo_name):
             raise PluginError(msg)
 
     loginfos = sorted(loginfos, key=itemgetter("Timestamp"), reverse=True)
+
     return render_table(loginfos)
 
 
-class GitLatestChangesPlugin(BasePlugin):
+class GitLatestChangesPluginConfig(Config):
+    pass
+
+
+class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
     """
     Mkdocs plugin to render latest changes from Git.
     Reference: https://www.mkdocs.org/user-guide/plugins
     """
 
-    def on_page_markdown(self, markdown: str, page: Page, config, **kwargs) -> str:
+    def on_page_markdown(
+        self, markdown: str, /, *, page: Page, config: MkDocsConfig, files: Files
+    ) -> str | None:
         marker = "{{ latest_changes }}"
         if marker in markdown:
             log.debug(f"Found latest_changes marker in {page.file.src_uri}")
-            latest_changes = get_recent_changes(
-                repo_url=config.repo_url, repo_name=config.repo_name
-            )
+
+            # Make mypy happy
+            # Argument "repo_url" to "get_recent_changes" has incompatible type
+            # "str | None"; expected "str"  [arg-type]
+            repo_url = str(config.repo_url or "")
+            repo_name = str(config.repo_name or "")
+            latest_changes = get_recent_changes(repo_url=repo_url, repo_name=repo_name)
             markdown = markdown.replace(marker, latest_changes)
 
         return markdown

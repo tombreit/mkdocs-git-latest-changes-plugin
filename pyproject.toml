@@ -56,6 +56,14 @@ license-files = ["LICENSES/*.txt"]
 [tool.setuptools.packages.find]
 # Use setuptools autodiscover
 
+[tool.mypy]
+strict = true
+allow_subclassing_any = true
+untyped_calls_exclude = [
+    "mkdocs.config.base.Config",
+    "mkdocs.plugins.BasePlugin",
+]
+
 [[tool.mypy.overrides]]
 module = "mkdocs_git_latest_changes_plugin"
 
