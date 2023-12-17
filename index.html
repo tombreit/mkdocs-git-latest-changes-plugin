@@ -72,6 +72,10 @@
             
             <li class="nav-item" data-level="1"><a href="#mkdocs-git-latest-changes-plugin" class="nav-link">mkdocs-git-latest-changes-plugin</a>
               <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#feature" class="nav-link">Feature</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
             <li class="nav-item" data-level="2"><a href="#hints" class="nav-link">Hints</a>
               <ul class="nav flex-column">
               </ul>
@@ -100,6 +104,14 @@ SPDX-License-Identifier: MIT
 <li><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/issues">Issues</a></li>
 <li><a href="https://pypi.org/project/mkdocs-git-latest-changes-plugin/">PyPI package</a></li>
 </ul>
+<h2 id="feature">Feature</h2>
+<ul>
+<li>Get all files of your MkDocs project currently in git with their file path, commit message, commit timestamp, commit hash and author.</li>
+<li>Sort by commit timestamp descending.</li>
+<li>Convert this to a markdown table.</li>
+<li>Substitute the marker string <code>&#123;&#123; latest_changes &#125;&#125;</code> with this markdown table.</li>
+<li>Enjoy your latest changes table rendered by your MkDocs theme.</li>
+</ul>
 <h2 id="hints">Hints</h2>
 <ul>
 <li>This plugin depends of having any commits in the current git branch.</li>
@@ -127,6 +139,13 @@ SPDX-License-Identifier: MIT
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>docs/index.md</td>
+<td>2023-12-17 22:15:40</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/f3c0abe489d674c5995f076dc5a3bafe418e340e">f3c0abe</a></td>
+<td>Thomas Breitner</td>
+<td>More detailed explanation of how this plugin works.</td>
+</tr>
 <tr>
 <td>.github/workflows/deploy.yml</td>
 <td>2023-12-17 21:59:04</td>
@@ -168,13 +187,6 @@ SPDX-License-Identifier: MIT
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/ba17449634d1498492e818c9eff77e9c89915c53">ba17449</a></td>
 <td>Thomas Breitner</td>
 <td>Bumped ruff version</td>
-</tr>
-<tr>
-<td>docs/index.md</td>
-<td>2023-12-17 13:51:37</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/428a488fcd7c9753bde2353bf81905021a803cb7">428a488</a></td>
-<td>Thomas Breitner</td>
-<td>Raise and render a warning if no git repository is found</td>
 </tr>
 <tr>
 <td>docs/test.md</td>
@@ -295,5 +307,5 @@ SPDX-License-Identifier: MIT
 
 <!--
 MkDocs version : 1.5.3
-Build Date UTC : 2023-12-17 20:59:28.667939+00:00
+Build Date UTC : 2023-12-17 21:16:22.433861+00:00
 -->
