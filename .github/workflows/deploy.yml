@@ -2,17 +2,17 @@
 #
 # SPDX-License-Identifier: CC0-1.0
 
-name: Deploy Python Package
+name: Deploy PyPI package
 
 on:
   # push
   release:
     types: [published]
 
-permissions:
+# permissions:
   # "contents: write" Currently necessary due to gh-pages deployment
-  contents: write
-  pages: write
+  # contents: write
+  # pages: write
 
 jobs:
 
@@ -20,13 +20,11 @@ jobs:
     uses: ./.github/workflows/tests.yml
 
   deploy:
-    name: Build python package, upload to PyPI, update GH pages
+    name: Build python package, upload to PyPI
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
@@ -34,7 +32,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip setuptools wheel
-        pip install --upgrade build twine
+        python -m pip install --upgrade build twine
     - name: Build package
       run: python -m build
     - name: Publish package to PyPI
@@ -48,11 +46,3 @@ jobs:
     #     repository-url: https://test.pypi.org/legacy/
     #     user: __token__
     #     password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-    - name: Deploy to github pages
-      run: |
-        git pull origin main
-        git branch -a -v
-        git switch main
-        git branch -a -v
-        python -m pip install .
-        mkdocs gh-deploy --force --verbose
