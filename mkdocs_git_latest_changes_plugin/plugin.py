@@ -221,7 +221,7 @@ class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
 
     def on_page_markdown(
         self, markdown: str, /, *, page: Page, config: MkDocsConfig, files: Files
-    ) -> str | None:
+    ) -> Optional[str]:
         marker = "{{ latest_changes }}"
         if marker in markdown:
             log.debug(f"Found latest_changes marker in {page.file.src_uri}")
