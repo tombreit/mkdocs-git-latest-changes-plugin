@@ -14,12 +14,18 @@ from operator import itemgetter
 from pathlib import Path
 
 from git import Git, Repo
-from git.exc import GitCommandError
+from git.exc import GitCommandError, InvalidGitRepositoryError
 from mkdocs.exceptions import PluginError
 from mkdocs.plugins import BasePlugin, get_plugin_logger
 from mkdocs.structure.pages import Page
 
 log = get_plugin_logger(__name__)
+
+
+def get_error_message(error):
+    template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+    msg = template.format(type(error).__name__, error.args)
+    return msg
 
 
 def get_remote_repo_url(repo_url, repo_name, branch, commit_hash=None, filepath=None):
@@ -114,15 +120,20 @@ def sanitize(string: str) -> str:
 
 
 def get_recent_changes(*, repo_url, repo_name):
-    repo = Repo(Path.cwd())
-    branch = repo.active_branch
-    g = Git(repo)
-    g.init()
-
-    log.debug(f"Initialized repo `{repo}`, branch `{branch}`...")
-
-    files = g.ls_files()
-    files = files.split("\n")
+    try:
+        repo = Repo(Path.cwd())
+        branch = repo.active_branch
+        g = Git(repo)
+        g.init()
+    except InvalidGitRepositoryError as invalid_repo_error:
+        msg = get_error_message(invalid_repo_error)
+        # Only log a warning to allow running via `--no-strict`
+        log.warning(msg)
+        return f"Warning: {msg}"
+    else:
+        log.debug(f"Initialized repo `{repo}`, branch `{branch}`...")
+        files = g.ls_files()
+        files = files.split("\n")
 
     loginfos = []
     for file in files:
@@ -162,17 +173,13 @@ def get_recent_changes(*, repo_url, repo_name):
             del fileinfo["hash_full"]
             loginfos.append(fileinfo)
         except GitCommandError as git_command_error:
-            template = "An exception of type {0} occurred. Arguments:\n{1!r}"
-            msg = template.format(
-                type(git_command_error).__name__, git_command_error.args
-            )
             # Only log a warning to allow running via `--no-strict`
+            msg = get_error_message(git_command_error)
             log.warning(msg)
         except Exception as error:
             # Trigger a MkDocs BuildError via raising a PluginError. Causes
             # MkDocs to abort, even if running in no-strict mode.
-            template = "An exception of type {0} occurred. Arguments:\n{1!r}"
-            msg = template.format(type(error).__name__, error.args)
+            msg = get_error_message(error)
             log.warning(msg)
             raise PluginError(msg)
 
