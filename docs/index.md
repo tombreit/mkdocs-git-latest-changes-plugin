@@ -12,6 +12,14 @@ MkDocs plugin that allows you to display a list of recently modified pages from 
 - [Issues](https://github.com/tombreit/mkdocs-git-latest-changes-plugin/issues)
 - [PyPI package](https://pypi.org/project/mkdocs-git-latest-changes-plugin/)
 
+## Feature
+
+- Get all files of your MkDocs project currently in git with their file path, commit message, commit timestamp, commit hash and author.
+- Sort by commit timestamp descending.
+- Convert this to a markdown table.
+- Substitute the marker string <code>&#123;&#123; latest_changes &#125;&#125;</code> with this markdown table.
+- Enjoy your latest changes table rendered by your MkDocs theme.
+
 ## Hints
 
 - This plugin depends of having any commits in the current git branch.
