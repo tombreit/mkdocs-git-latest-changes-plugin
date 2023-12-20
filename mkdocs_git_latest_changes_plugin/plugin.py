@@ -57,9 +57,6 @@ def get_remote_repo_url(
     file_url:   https://gitlab.com/<ns>/<project>/-/blob/<branch>/<filepath>
     """
 
-    if not all([repo_url, repo_name]):
-        return ""
-
     repo_name = repo_name.lower()
 
     supported_remote_repos = {
@@ -73,6 +70,9 @@ def get_remote_repo_url(
         },
     }
 
+    if not all([repo_url, repo_name]):
+        return None
+
     if repo_name not in supported_remote_repos.keys():
         return None
 
@@ -83,6 +83,7 @@ def get_remote_repo_url(
             f"{repo_url}{supported_remote_repos[repo_name]['file_spacer']}{filepath}"
         )
 
+    print(f"{repo_url=}")
     return repo_url
 
 
@@ -174,7 +175,10 @@ def get_recent_changes(*, repo_url: str, repo_name: str) -> str:
                 commit_hash=loginfo["hash_full"],
             )
             repo_file_url = get_remote_repo_url(
-                repo_url=repo_url, repo_name=repo_url, branch=branch, filepath=file
+                repo_url=repo_url,
+                repo_name=repo_name,
+                branch=branch,
+                filepath=file,
             )
 
             # Dictionary insert order defines the result column order
