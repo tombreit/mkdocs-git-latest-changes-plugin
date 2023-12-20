@@ -11,6 +11,7 @@ modified pages from the Git log.
 import json
 import unicodedata
 from operator import itemgetter
+from dataclasses import dataclass
 
 from git import Repo
 from git.exc import GitCommandError, InvalidGitRepositoryError
@@ -28,22 +29,29 @@ from typing import Optional
 log = get_plugin_logger(__name__)
 
 
+@dataclass
+class RepoURLs:
+    commit_hash_url: str
+    filepath_url: str
+
+
 def get_error_message(error: Exception) -> str:
     template = "An exception of type {0} occurred. Arguments:\n{1!r}"
     msg = template.format(type(error).__name__, error.args)
     return msg
 
 
-def get_remote_repo_url(
+def get_remote_repo_urls(
     *,
     repo_url: str,
     repo_name: str,
     branch: str,
-    commit_hash: str = "",
-    filepath: str = "",
-) -> Optional[str]:
+    commit_hash: str,
+    commit_hash_short: str,
+    filepath: str,
+) -> RepoURLs:
     """
-    Build URL for a given git hash or file and a repository. Currently only
+    Build URLs for a given git hash, file and a repository as a markdown link. Currently only
     for Github and Gitlab.
 
     Github:
@@ -57,34 +65,49 @@ def get_remote_repo_url(
     file_url:   https://gitlab.com/<ns>/<project>/-/blob/<branch>/<filepath>
     """
 
-    repo_name = repo_name.lower()
-
     supported_remote_repos = {
         "github": {
-            "commit_spacer": "/commit/",
-            "file_spacer": f"/blob/{branch}/",
+            "hash_url_tpl": "[{linktext}]({repo_url}/commit/{commit_hash})",
+            "filepath_url_tpl": "[{linktext}]({repo_url}/blob/{branch}/{filepath})",
         },
         "gitlab": {
-            "commit_spacer": "/-/commit/",
-            "file_spacer": f"/-/blob/{branch}/",
+            "hash_url_tpl": "[{linktext}]({repo_url}/-/commit/{commit_hash})",
+            "filepath_url_tpl": "[{linktext}]({repo_url}/-/blob/{branch}/{filepath})",
         },
     }
 
-    if not all([repo_url, repo_name]):
-        return None
+    repo_name = repo_name.lower()
+    # Initialize result dataclass with plain commit_hash and filepath,
+    # not formatted as markdown links
+    repo_urls = RepoURLs(commit_hash_url=commit_hash, filepath_url=filepath)
 
     if repo_name not in supported_remote_repos.keys():
-        return None
-
-    if commit_hash:
-        repo_url = f"{repo_url}{supported_remote_repos[repo_name]['commit_spacer']}{commit_hash}"
-    elif filepath:
-        repo_url = (
-            f"{repo_url}{supported_remote_repos[repo_name]['file_spacer']}{filepath}"
+        log.warning(
+            f"Repository config.repo_name '{repo_name} not supported.\
+                    Only '{supported_remote_repos.keys()}' supported. Commit\
+                    hashes and filepaths will not be linkified."
         )
 
-    print(f"{repo_url=}")
-    return repo_url
+    if all([repo_url, repo_name]):
+        # Update dataclass with markdown links
+
+        repo_urls.commit_hash_url = supported_remote_repos[repo_name][
+            "hash_url_tpl"
+        ].format(
+            linktext=commit_hash_short,
+            commit_hash=commit_hash,
+            repo_url=repo_url,
+        )
+        repo_urls.filepath_url = supported_remote_repos[repo_name][
+            "filepath_url_tpl"
+        ].format(
+            linktext=filepath,
+            filepath=filepath,
+            repo_url=repo_url,
+            branch=branch,
+        )
+
+    return repo_urls
 
 
 def render_table(loginfos: list[dict[str, str]]) -> str:
@@ -161,41 +184,31 @@ def get_recent_changes(*, repo_url: str, repo_name: str) -> str:
         try:
             loginfo = git.log(
                 "-1",
-                '--pretty=format:{"Timestamp": "%cd", "Hash": "%h", "hash_full": "%H", "Author": "%an", "Message": "%s"}',
+                '--pretty=format:{"Timestamp": "%cd", "hash_short": "%h", "hash_full": "%H", "Author": "%an", "Message": "%s"}',
                 "--date=format:%Y-%m-%d %H:%M:%S",
                 file,
             )
             loginfo = f"{sanitize(loginfo)}"
             loginfo = json.loads(loginfo)
 
-            repo_commit_url = get_remote_repo_url(
+            repo_urls = get_remote_repo_urls(
                 repo_url=repo_url,
                 repo_name=repo_name,
                 branch=branch,
                 commit_hash=loginfo["hash_full"],
-            )
-            repo_file_url = get_remote_repo_url(
-                repo_url=repo_url,
-                repo_name=repo_name,
-                branch=branch,
+                commit_hash_short=loginfo["hash_short"],
                 filepath=file,
             )
 
             # Dictionary insert order defines the result column order
-            fileinfo = {
-                "Filepath": f"[{file}]({repo_file_url})" if repo_file_url else f"{file}"
-            }
+            fileinfo = {"Filepath": repo_urls.filepath_url}
             fileinfo.update(loginfo)
-            fileinfo.update(
-                {
-                    "Hash": f"[{loginfo['Hash']}]({repo_commit_url})"
-                    if repo_commit_url
-                    else f"{loginfo['Hash']}",
-                }
-            )
+            fileinfo.update({"Commit": repo_urls.commit_hash_url})
 
             # We do not need the full git hash any more
             del fileinfo["hash_full"]
+            del fileinfo["hash_short"]
+
             loginfos.append(fileinfo)
         except GitCommandError as git_command_error:
             # Only log a warning to allow running via `--no-strict`
@@ -235,6 +248,7 @@ class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
             # "str | None"; expected "str"  [arg-type]
             repo_url = str(config.repo_url or "")
             repo_name = str(config.repo_name or "")
+
             latest_changes = get_recent_changes(repo_url=repo_url, repo_name=repo_name)
             markdown = markdown.replace(marker, latest_changes)
 
