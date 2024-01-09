@@ -178,18 +178,24 @@ def get_recent_changes(*, repo_url: str, repo_name: str) -> str:
         files = files.split("\n")
 
     loginfos = []
+    ok_keys = { 'Timestamp': True, 'hash_short': True, 'hash_full': True, 'author': True, 'date': True, 'message': True }
     for file in files:
         log.debug(f"Processing file `{file}`...")
 
         try:
             loginfo = git.log(
                 "-1",
-                '--pretty=format:{"Timestamp": "%cd", "hash_short": "%h", "hash_full": "%H", "Author": "%an", "Message": "%s"}',
+                "--pretty=format:Timestamp:%cd%nhash_short:%h%nhash_full:%H%nauthor:%aN <%aE>%ndate:%ad%nmessage:%s%n",
                 "--date=format:%Y-%m-%d %H:%M:%S",
                 file,
             )
-            loginfo = f"{sanitize(loginfo)}"
-            loginfo = json.loads(loginfo)
+            tmpdict = {}
+            for line in loginfo.splitlines():
+                k, v = line.split(":", maxsplit=1)
+                if k not in ok_keys:
+                    raise ValueError(f"Unexpected key parsed from `git log`: {k}")
+                tmpdict[k] = sanitize(v)
+            loginfo = tmpdict
 
             repo_urls = get_remote_repo_urls(
                 repo_url=repo_url,
