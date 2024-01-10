@@ -178,7 +178,7 @@ def get_recent_changes(*, repo_url: str, repo_name: str) -> str:
         files = files.split("\n")
 
     loginfos = []
-    ok_keys = { 'Timestamp': True, 'hash_short': True, 'hash_full': True, 'author': True, 'date': True, 'message': True }
+    ok_keys = { 'Timestamp', 'hash_short', 'hash_full', 'author', 'date', 'message' }
     for file in files:
         log.debug(f"Processing file `{file}`...")
 
