@@ -53,9 +53,6 @@ license-files = ["LICENSES/*.txt"]
 
 [tool.setuptools_scm]
 
-[tool.setuptools.packages.find]
-# Use setuptools autodiscover
-
 [tool.mypy]
 strict = true
 allow_subclassing_any = true
@@ -68,5 +65,5 @@ untyped_calls_exclude = [
 module = "mkdocs_git_latest_changes_plugin"
 
 [tool.ruff]
-src = ["mkdocs_git_latest_changes_plugin"]
+src = ["src", "tests"]
 target-version = "py311"
