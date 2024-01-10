@@ -193,7 +193,7 @@ def get_recent_changes(*, repo_url: str, repo_name: str) -> str:
             for line in loginfo.splitlines():
                 k, v = line.split(":", maxsplit=1)
                 if k not in ok_keys:
-                    raise ValueError(f"Unexpected key parsed from `git log`: {k}")
+                    raise KeyError(f"Unexpected key parsed from `git log`: '{k}'")
                 tmpdict[k] = sanitize(v)
             loginfo = tmpdict
 
