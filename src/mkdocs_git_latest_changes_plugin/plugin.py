@@ -13,6 +13,7 @@ import html
 # import unicodedata
 from operator import itemgetter
 from dataclasses import dataclass
+from urllib.parse import urlsplit
 
 from git import Repo
 from git.exc import GitCommandError, InvalidGitRepositoryError
@@ -34,6 +35,17 @@ log = get_plugin_logger(__name__)
 SEP_HEX = "%x00"
 SEP_UNICODE = "\000"
 
+SUPPORTED_REMOTE_REPOS = {
+    "github": {
+        "hash_url_tpl": "[{linktext}]({repo_url}/commit/{commit_hash})",
+        "filepath_url_tpl": "[{linktext}]({repo_url}/blob/{branch}/{filepath})",
+    },
+    "gitlab": {
+        "hash_url_tpl": "[{linktext}]({repo_url}/-/commit/{commit_hash})",
+        "filepath_url_tpl": "[{linktext}]({repo_url}/-/blob/{branch}/{filepath})",
+    },
+}
+
 
 @dataclass
 class RepoURLs:
@@ -50,7 +62,7 @@ def get_error_message(error: Exception) -> str:
 def get_remote_repo_urls(
     *,
     repo_url: str,
-    repo_name: str,
+    repo_vendor: str,
     branch: str,
     commit_hash: str,
     commit_hash_short: str,
@@ -71,40 +83,21 @@ def get_remote_repo_urls(
     file_url:   https://gitlab.com/<ns>/<project>/-/blob/<branch>/<filepath>
     """
 
-    supported_remote_repos = {
-        "github": {
-            "hash_url_tpl": "[{linktext}]({repo_url}/commit/{commit_hash})",
-            "filepath_url_tpl": "[{linktext}]({repo_url}/blob/{branch}/{filepath})",
-        },
-        "gitlab": {
-            "hash_url_tpl": "[{linktext}]({repo_url}/-/commit/{commit_hash})",
-            "filepath_url_tpl": "[{linktext}]({repo_url}/-/blob/{branch}/{filepath})",
-        },
-    }
-
-    repo_name = repo_name.lower()
     # Initialize result dataclass with plain commit_hash and filepath,
     # not formatted as markdown links
-    repo_urls = RepoURLs(commit_hash_url=commit_hash, filepath_url=filepath)
+    repo_urls = RepoURLs(commit_hash_url=commit_hash_short, filepath_url=filepath)
 
-    if repo_name not in supported_remote_repos.keys():
-        log.warning(
-            f"Repository config.repo_name '{repo_name} not supported.\
-                    Only '{supported_remote_repos.keys()}' supported. Commit\
-                    hashes and filepaths will not be linkified."
-        )
-
-    if all([repo_url, repo_name]):
+    if all([repo_url, repo_vendor]):
         # Update dataclass with markdown links
 
-        repo_urls.commit_hash_url = supported_remote_repos[repo_name][
+        repo_urls.commit_hash_url = SUPPORTED_REMOTE_REPOS[repo_vendor][
             "hash_url_tpl"
         ].format(
             linktext=commit_hash_short,
             commit_hash=commit_hash,
             repo_url=repo_url,
         )
-        repo_urls.filepath_url = supported_remote_repos[repo_name][
+        repo_urls.filepath_url = SUPPORTED_REMOTE_REPOS[repo_vendor][
             "filepath_url_tpl"
         ].format(
             linktext=filepath,
@@ -164,7 +157,25 @@ def sanitize_string(string: str) -> str:
     return string
 
 
-def get_recent_changes(*, repo_url: str, repo_name: str) -> str:
+def get_repo_vendor(url: str) -> str:
+    hostname = ""
+
+    try:
+        components = urlsplit(url)
+        hostname = components.netloc.split(".")[-2]
+        hostname = hostname.lower()
+    except IndexError:
+        pass
+
+    if hostname and hostname not in SUPPORTED_REMOTE_REPOS.keys():
+        log.warning(
+            f"Repository config.repo_vendor '{hostname}' not supported. Only '{', '.join(SUPPORTED_REMOTE_REPOS.keys())}' supported. Commit hashes and filepaths will not be linkified."
+        )
+
+    return hostname
+
+
+def get_recent_changes(*, repo_url: str, repo_vendor: str) -> str:
     try:
         repo = Repo()
         branch = repo.active_branch
@@ -219,7 +230,7 @@ def get_recent_changes(*, repo_url: str, repo_name: str) -> str:
 
             repo_urls = get_remote_repo_urls(
                 repo_url=repo_url,
-                repo_name=repo_name,
+                repo_vendor=repo_vendor,
                 branch=branch,
                 commit_hash=loginfo["hash_full"],
                 commit_hash_short=loginfo["hash_short"],
@@ -276,9 +287,11 @@ class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
             # Argument "repo_url" to "get_recent_changes" has incompatible type
             # "str | None"; expected "str"  [arg-type]
             repo_url = str(config.repo_url or "")
-            repo_name = str(config.repo_name or "")
+            repo_vendor = get_repo_vendor(repo_url)
 
-            latest_changes = get_recent_changes(repo_url=repo_url, repo_name=repo_name)
+            latest_changes = get_recent_changes(
+                repo_url=repo_url, repo_vendor=repo_vendor
+            )
             markdown = markdown.replace(marker, latest_changes)
 
         return markdown
