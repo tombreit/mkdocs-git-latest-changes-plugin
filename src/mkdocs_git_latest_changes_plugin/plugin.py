@@ -201,7 +201,6 @@ def get_recent_changes(*, repo_url: str, repo_name: str) -> str:
                 "--date=format:%Y-%m-%d %H:%M:%S",
                 file,
             )
-            print(f"{file}: {loginfo_raw=}")
 
             loginfo_safe = [
                 sanitize_string(loginfo) for loginfo in loginfo_raw.split(SEP_UNICODE)
