@@ -30,7 +30,7 @@ jobs:
       - name: Test REUSE compliance
         run: reuse lint
       - name: Check typing
-        run: python -m mypy mkdocs_git_latest_changes_plugin/
+        run: python -m mypy .
       - name: Run ruff
         uses: chartboost/ruff-action@v1
         with:
