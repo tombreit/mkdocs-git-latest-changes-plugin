@@ -196,6 +196,7 @@ def get_recent_changes(*, repo_url: str, repo_vendor: str) -> str:
         files = git.ls_files()
         files = files.split("\n")
 
+    log.info(f"{len(files)} files found in git index and working tree.")
     loginfos = []
     for file in files:
         log.debug(f"Processing file `{file}`...")
