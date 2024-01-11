@@ -7,9 +7,10 @@ MkDocs Plugin plugin that allows you to display a list of recently
 modified pages from the Git log.
 """
 
+import html
 
-import json
-import unicodedata
+# import json
+# import unicodedata
 from operator import itemgetter
 from dataclasses import dataclass
 
@@ -27,6 +28,11 @@ from typing import Optional
 
 
 log = get_plugin_logger(__name__)
+
+
+# Custom separator character for git log output
+SEP_HEX = "%x00"
+SEP_UNICODE = "\000"
 
 
 @dataclass
@@ -146,14 +152,16 @@ def render_table(loginfos: list[dict[str, str]]) -> str:
     return markdown_table
 
 
-def sanitize(string: str) -> str:
-    # log.debug(f"sanitize: `{string}`...")
-    # Strip unicode control characters from string:
-    sanitized_string = "".join(
-        ch for ch in string if unicodedata.category(ch)[0] != "C"
-    )
+def sanitize_string(string: str) -> str:
+    string = string.strip()
+    string = html.escape(string)
 
-    return str(sanitized_string)
+    # Strip unicode control characters from string:
+    # string = "".join(
+    #     ch for ch in string if unicodedata.category(ch)[0] != "C"
+    # )
+
+    return string
 
 
 def get_recent_changes(*, repo_url: str, repo_name: str) -> str:
@@ -182,14 +190,33 @@ def get_recent_changes(*, repo_url: str, repo_name: str) -> str:
         log.debug(f"Processing file `{file}`...")
 
         try:
-            loginfo = git.log(
+            # git log placeholders:
+            # https://git-scm.com/docs/pretty-formats
+
+            _format = f"%cd{SEP_HEX}%h{SEP_HEX}%H{SEP_HEX}%an{SEP_HEX}%s"
+
+            loginfo_raw = git.log(
                 "-1",
-                '--pretty=format:{"Timestamp": "%cd", "hash_short": "%h", "hash_full": "%H", "Author": "%an", "Message": "%s"}',
+                f"--pretty=format:{_format}",
                 "--date=format:%Y-%m-%d %H:%M:%S",
                 file,
             )
-            loginfo = f"{sanitize(loginfo)}"
-            loginfo = json.loads(loginfo)
+            print(f"{file}: {loginfo_raw=}")
+
+            loginfo_safe = [
+                sanitize_string(loginfo) for loginfo in loginfo_raw.split(SEP_UNICODE)
+            ]
+
+            loginfo = {
+                "Timestamp": loginfo_safe[0],
+                "hash_short": loginfo_safe[1],
+                "hash_full": loginfo_safe[2],
+                "Author": loginfo_safe[3],
+                "Message": loginfo_safe[4],
+            }
+
+            # loginfo = json.dumps(loginfo)
+            # loginfo = json.loads(loginfo)
 
             repo_urls = get_remote_repo_urls(
                 repo_url=repo_url,
@@ -214,6 +241,9 @@ def get_recent_changes(*, repo_url: str, repo_name: str) -> str:
             # Only log a warning to allow running via `--no-strict`
             msg = get_error_message(git_command_error)
             log.warning(msg)
+        except IndexError as index_error:
+            msg = get_error_message(index_error)
+            log.warning(f"{msg}. Possible cause: file {file} not commited yet.")
         except Exception as error:
             # Trigger a MkDocs BuildError via raising a PluginError. Causes
             # MkDocs to abort, even if running in no-strict mode.

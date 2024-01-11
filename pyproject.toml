@@ -37,6 +37,7 @@ dev = [
     "reuse",
     "mypy",
     "ruff",
+    "pytest",
 ]
 
 [project.entry-points."mkdocs.plugins"]
@@ -55,14 +56,12 @@ license-files = ["LICENSES/*.txt"]
 
 [tool.mypy]
 strict = true
+exclude = ["tests/"]
 allow_subclassing_any = true
 untyped_calls_exclude = [
     "mkdocs.config.base.Config",
     "mkdocs.plugins.BasePlugin",
 ]
-
-[[tool.mypy.overrides]]
-module = "mkdocs_git_latest_changes_plugin"
 
 [tool.ruff]
 src = ["src", "tests"]
