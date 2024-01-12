@@ -36,6 +36,15 @@
                             <li class="navitem">
                                 <a href="test/" class="nav-link">Test</a>
                             </li>
+                            <li class="dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Subdir <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="subdir/" class="dropdown-item">Index</a>
+</li>
+                                </ul>
+                            </li>
                         </ul>
 
                     <ul class="nav navbar-nav ml-auto">
@@ -72,7 +81,7 @@
             
             <li class="nav-item" data-level="1"><a href="#mkdocs-git-latest-changes-plugin" class="nav-link">mkdocs-git-latest-changes-plugin</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#feature" class="nav-link">Feature</a>
+            <li class="nav-item" data-level="2"><a href="#features" class="nav-link">Features</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -104,13 +113,19 @@ SPDX-License-Identifier: MIT
 <li><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/issues">Issues</a></li>
 <li><a href="https://pypi.org/project/mkdocs-git-latest-changes-plugin/">PyPI package</a></li>
 </ul>
-<h2 id="feature">Feature</h2>
+<h2 id="features">Features</h2>
 <ul>
 <li>Get all files of your MkDocs project currently in git with their file path, commit message, commit timestamp, commit hash and author.</li>
 <li>Sort by commit timestamp descending.</li>
 <li>Convert this to a markdown table.</li>
 <li>Substitute the marker string <code>&#123;&#123; latest_changes &#125;&#125;</code> with this markdown table.</li>
 <li>Enjoy your latest changes table rendered by your MkDocs theme.</li>
+<li>Limit <code>&#123;&#123; latest_changes &#125;&#125;</code> to your pages in your <code>docs_dir</code> and exclude the git history information for other files from your project repository via plugin config <code>limit_to_docs_dir</code> (default: False):<pre><code># mkdocs.yml
+plugins:
+  - git-latest-changes:
+      limit_to_docs_dir: True
+</code></pre>
+</li>
 </ul>
 <h2 id="hints">Hints</h2>
 <ul>
@@ -118,7 +133,7 @@ SPDX-License-Identifier: MIT
 <li>An error will be raised/rendered if no git repository exists.</li>
 <li>For linked git commit hashes and filenames, the MkDocs config variable <code>repo_url</code> must be set and point to a Github or Gitlab repository.</li>
 <li>Relax warnings with <code>--no-strict</code> (via MkDocs <a href="https://www.mkdocs.org/user-guide/configuration/#strict">strict configuration</a>, <a href="https://www.mkdocs.org/user-guide/cli/">cli</a>), e.g. if a expected file is not in the git working tree.</li>
-<li>Log level: Request debug information for this plugin via MkDocs <code>--verbose</code> command line flag.</li>
+<li>Log level: Request debug information for this plugin via MkDocs <code>--verbose / -v</code> command line flag.</li>
 </ul>
 <h2 id="latest-changes-demo">Latest changes demo</h2>
 <h3 id="code">Code</h3>
@@ -140,74 +155,18 @@ SPDX-License-Identifier: MIT
 </thead>
 <tbody>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/src/mkdocs_git_latest_changes_plugin/plugin.py">src/mkdocs_git_latest_changes_plugin/plugin.py</a></td>
-<td>2024-01-12 00:46:34</td>
-<td>Thomas Breitner</td>
-<td>Display INFO message for the total number of files to process</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/9b0fb6cfeff9f34aebfc7a953619f0807ab341de">9b0fb6c</a></td>
-</tr>
-<tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/.github/workflows/tests.yml">.github/workflows/tests.yml</a></td>
-<td>2024-01-11 15:58:48</td>
-<td>Thomas Breitner</td>
-<td>Fixed ruff path in gh action</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/68c585fc72c2f9978b13b48a92172f3a213a35b5">68c585f</a></td>
-</tr>
-<tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/pyproject.toml">pyproject.toml</a></td>
-<td>2024-01-11 15:49:37</td>
-<td>Thomas Breitner</td>
-<td>(Hopefully) sanitize git log strings</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/7d53ff41d6db0cb7e8a2d09b6104c2784b6685dd">7d53ff4</a></td>
-</tr>
-<tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/tests/test_plugin.py">tests/test_plugin.py</a></td>
-<td>2024-01-11 15:49:05</td>
-<td>Thomas Breitner</td>
-<td>removed unused imports</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/1ad39f6827ed60608c13f4244e9cf8b6bcdf2be0">1ad39f6</a></td>
-</tr>
-<tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/.pre-commit-config.yaml">.pre-commit-config.yaml</a></td>
-<td>2024-01-11 15:48:47</td>
-<td>Thomas Breitner</td>
-<td>mypy: Exclude test dir (for now)</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/b63bacf41eeb089bc9fb0af358811ca064809967">b63bacf</a></td>
-</tr>
-<tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/.gitignore">.gitignore</a></td>
-<td>2024-01-10 08:01:54</td>
-<td>Thomas Breitner</td>
-<td>src-based directory layout</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/c9a468dc6175f3770ecba34d7ce420ff1473e4d0">c9a468d</a></td>
-</tr>
-<tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/src/mkdocs_git_latest_changes_plugin/__init__.py">src/mkdocs_git_latest_changes_plugin/<strong>init</strong>.py</a></td>
-<td>2024-01-10 08:01:54</td>
-<td>Thomas Breitner</td>
-<td>src-based directory layout</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/c9a468dc6175f3770ecba34d7ce420ff1473e4d0">c9a468d</a></td>
-</tr>
-<tr>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/docs/index.md">docs/index.md</a></td>
-<td>2023-12-17 22:15:40</td>
+<td>2024-01-12 15:10:41</td>
 <td>Thomas Breitner</td>
-<td>More detailed explanation of how this plugin works.</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/f3c0abe489d674c5995f076dc5a3bafe418e340e">f3c0abe</a></td>
+<td>New config option: limit_to_docs_dir</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/6f667fb14d8994ef40336a99755a0874d5dfc47d">6f667fb</a></td>
 </tr>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/.github/workflows/deploy.yml">.github/workflows/deploy.yml</a></td>
-<td>2023-12-17 21:59:04</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/docs/subdir/index.md">docs/subdir/index.md</a></td>
+<td>2024-01-12 11:42:24</td>
 <td>Thomas Breitner</td>
-<td>Github pages already triggered by test workflow: removed duplicate push trigger in ghpages.yml</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/6cb7efcc150bfdb15e14625951ba93841798af08">6cb7efc</a></td>
-</tr>
-<tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/.github/workflows/ghpages.yml">.github/workflows/ghpages.yml</a></td>
-<td>2023-12-17 21:59:04</td>
-<td>Thomas Breitner</td>
-<td>Github pages already triggered by test workflow: removed duplicate push trigger in ghpages.yml</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/6cb7efcc150bfdb15e14625951ba93841798af08">6cb7efc</a></td>
+<td>Added sub directory to test new config option</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/c987c897d1bc4a8fc942d49a23c382bc4e5a2558">c987c89</a></td>
 </tr>
 <tr>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/docs/test.md">docs/test.md</a></td>
@@ -215,41 +174,6 @@ SPDX-License-Identifier: MIT
 <td>Thomas Breitner</td>
 <td>Some prose for test.md</td>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/4b0cccf8cbcc19259584beba61f872c2e7d335a2">4b0cccf</a></td>
-</tr>
-<tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/README.md">README.md</a></td>
-<td>2023-12-17 13:46:47</td>
-<td>Thomas Breitner</td>
-<td>First the demo, then the setup</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/de0da337ce65fea7c586bb4fe799b8ffed14cbee">de0da33</a></td>
-</tr>
-<tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/LICENSE">LICENSE</a></td>
-<td>2023-12-17 13:45:29</td>
-<td>Thomas Breitner</td>
-<td>Add traditional LICENSE file to allow github to pick it up</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/1b07bbb67c7c308e1527652b61850ada775a71d0">1b07bbb</a></td>
-</tr>
-<tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/LICENSES/CC0-1.0.txt">LICENSES/CC0-1.0.txt</a></td>
-<td>2023-12-02 19:16:43</td>
-<td>Thomas Breitner</td>
-<td>REUSE-compliance</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/a2981f6cfe912e3c9bd22fdaed10dd7f8194b9be">a2981f6</a></td>
-</tr>
-<tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/LICENSES/MIT.txt">LICENSES/MIT.txt</a></td>
-<td>2023-12-02 19:16:43</td>
-<td>Thomas Breitner</td>
-<td>REUSE-compliance</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/a2981f6cfe912e3c9bd22fdaed10dd7f8194b9be">a2981f6</a></td>
-</tr>
-<tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/mkdocs.yml">mkdocs.yml</a></td>
-<td>2023-12-02 19:16:43</td>
-<td>Thomas Breitner</td>
-<td>REUSE-compliance</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/a2981f6cfe912e3c9bd22fdaed10dd7f8194b9be">a2981f6</a></td>
 </tr>
 </tbody>
 </table></div>
@@ -314,5 +238,5 @@ SPDX-License-Identifier: MIT
 
 <!--
 MkDocs version : 1.5.3
-Build Date UTC : 2024-01-11 23:46:57.894397+00:00
+Build Date UTC : 2024-01-12 14:11:23.236331+00:00
 -->
