@@ -12,13 +12,19 @@ MkDocs plugin that allows you to display a list of recently modified pages from 
 - [Issues](https://github.com/tombreit/mkdocs-git-latest-changes-plugin/issues)
 - [PyPI package](https://pypi.org/project/mkdocs-git-latest-changes-plugin/)
 
-## Feature
+## Features
 
 - Get all files of your MkDocs project currently in git with their file path, commit message, commit timestamp, commit hash and author.
 - Sort by commit timestamp descending.
 - Convert this to a markdown table.
 - Substitute the marker string <code>&#123;&#123; latest_changes &#125;&#125;</code> with this markdown table.
 - Enjoy your latest changes table rendered by your MkDocs theme.
+- Limit <code>&#123;&#123; latest_changes &#125;&#125;</code> to your pages in your `docs_dir` and exclude the git history information for other files from your project repository via plugin config `limit_to_docs_dir` (default: False):
+
+        # mkdocs.yml
+        plugins:
+          - git-latest-changes:
+              limit_to_docs_dir: True
 
 ## Hints
 
@@ -26,7 +32,7 @@ MkDocs plugin that allows you to display a list of recently modified pages from 
 - An error will be raised/rendered if no git repository exists.
 - For linked git commit hashes and filenames, the MkDocs config variable `repo_url` must be set and point to a Github or Gitlab repository.
 - Relax warnings with `--no-strict` (via MkDocs [strict configuration](https://www.mkdocs.org/user-guide/configuration/#strict), [cli](https://www.mkdocs.org/user-guide/cli/)), e.g. if a expected file is not in the git working tree.
-- Log level: Request debug information for this plugin via MkDocs `--verbose` command line flag.
+- Log level: Request debug information for this plugin via MkDocs `--verbose / -v` command line flag.
 
 ## Latest changes demo
 

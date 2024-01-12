@@ -18,7 +18,6 @@ MkDocs plugin that allows you to display a list of recently modified pages from 
 
 <https://tombreit.github.io/mkdocs-git-latest-changes-plugin/>
 
-
 ## Setup
 
 Install the plugin [PyPI package](https://pypi.org/project/mkdocs-git-latest-changes-plugin/):

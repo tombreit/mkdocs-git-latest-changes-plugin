@@ -24,6 +24,7 @@ from mkdocs.structure.files import Files
 from mkdocs.structure.pages import Page
 from mkdocs.config.defaults import MkDocsConfig
 from mkdocs.config.base import Config
+from mkdocs.config import config_options
 
 from typing import Optional
 
@@ -175,7 +176,9 @@ def get_repo_vendor(url: str) -> str:
     return hostname
 
 
-def get_recent_changes(*, repo_url: str, repo_vendor: str) -> str:
+def get_recent_changes(
+    *, repo_url: str, repo_vendor: str, limit_to_docs_dir: str
+) -> str:
     try:
         repo = Repo()
         branch = repo.active_branch
@@ -193,7 +196,7 @@ def get_recent_changes(*, repo_url: str, repo_vendor: str) -> str:
         raise PluginError(msg)
     else:
         log.debug(f"Initialized repo `{repo}`, branch `{branch}`...")
-        files = git.ls_files()
+        files = git.ls_files(limit_to_docs_dir)
         files = files.split("\n")
 
     log.info(f"{len(files)} files found in git index and working tree.")
@@ -268,7 +271,7 @@ def get_recent_changes(*, repo_url: str, repo_vendor: str) -> str:
 
 
 class GitLatestChangesPluginConfig(Config):
-    pass
+    limit_to_docs_dir = config_options.Type(bool, default=False)
 
 
 class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
@@ -290,9 +293,21 @@ class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
             repo_url = str(config.repo_url or "")
             repo_vendor = get_repo_vendor(repo_url)
 
-            latest_changes = get_recent_changes(
-                repo_url=repo_url, repo_vendor=repo_vendor
+            if self.config.limit_to_docs_dir:
+                log.debug(
+                    f"Plugin config limit_to_docs_dir enabled: Only take files from {config.docs_dir} into account."
+                )
+
+            limit_to_docs_dir = (
+                str(config.docs_dir) if self.config.limit_to_docs_dir else "."
             )
+
+            latest_changes = get_recent_changes(
+                repo_url=repo_url,
+                repo_vendor=repo_vendor,
+                limit_to_docs_dir=limit_to_docs_dir,
+            )
+
             markdown = markdown.replace(marker, latest_changes)
 
         return markdown

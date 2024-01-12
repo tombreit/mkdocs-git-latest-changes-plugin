@@ -84,6 +84,69 @@ def test_mkdocs_wo_latest_changes_marker_build(project: Repo):
         assert run_build(project.working_tree_dir)
 
 
+def test_mkdocs_w_limit_to_docs_dir_config(project: Repo):
+    with working_directory(project.working_tree_dir):
+        config_file_path = Path(PRROJECT_CONFIG)
+
+        # Test if a file not in docs_dir is included in {{ latest_changes }}
+        config_file_path.write_text(
+            """
+site_name: mkdocs-plugin-test
+strict: true
+plugins:
+  - git-latest-changes:
+      limit_to_docs_dir: False
+        """
+        )
+
+        project.index.add([str(config_file_path)])
+        project.index.commit("Set plugin config to include all files from git ls-files")
+
+        latest_changes_file_path = (
+            Path(project.working_tree_dir)
+            / DOCS_DIR
+            / f"{PAGE_W_LATEST_CHANGES_FILENAME}.md"
+        )
+        latest_changes_file_path.write_text("{{ latest_changes }}")
+
+        project.index.add([str(latest_changes_file_path)])
+        project.index.commit("Added latest changes page")
+
+        assert run_build(project.working_tree_dir)
+
+        latest_changes_page = (
+            Path(project.working_tree_dir)
+            / BUILD_DIR
+            / PAGE_W_LATEST_CHANGES_FILENAME
+            / "index.html"
+        )
+        assert latest_changes_page.exists()
+
+        contents = latest_changes_page.read_text()
+        assert re.search(
+            "<td>Set plugin config to include all files from git ls-files</td>",
+            contents,
+        )
+
+        # Test if a file not in docs_dir is not included in {{ latest_changes }}
+        config_file_path.write_text(
+            """
+site_name: mkdocs-plugin-test
+strict: true
+plugins:
+  - git-latest-changes:
+      limit_to_docs_dir: True
+        """
+        )
+
+        assert run_build(project.working_tree_dir)
+        contents = latest_changes_page.read_text()
+        assert not re.search(
+            "<td>Set plugin config to include all files from git ls-files</td>",
+            contents,
+        )
+
+
 @pytest.mark.parametrize(
     "msg,msg_rendered",
     [
