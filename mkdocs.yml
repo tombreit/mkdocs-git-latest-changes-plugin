@@ -4,6 +4,7 @@
 
 site_name: mkdocs-git-latest-changes-plugin
 repo_url: https://github.com/tombreit/mkdocs-git-latest-changes-plugin
+#repo_url: https://example.thismakesthepluginexplode.invalidtld
 strict: true
 plugins:
   - git-latest-changes:

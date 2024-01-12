@@ -159,22 +159,22 @@ def sanitize_string(string: str) -> str:
 
 
 def get_repo_vendor(url: str) -> str:
-    hostname = ""
+    repo_vendor = ""
 
     try:
         components = urlsplit(url)
-        hostname = components.netloc.split(".")[-2]
-        hostname = hostname.lower()
+        repo_vendor = components.netloc.split(".")[-2]
+        repo_vendor = repo_vendor.lower()
     except IndexError:
         pass
 
-    if hostname and hostname not in SUPPORTED_REMOTE_REPOS.keys():
-        log.warning(
-            f"Repository config.repo_vendor '{hostname}' not supported. Only '{', '.join(SUPPORTED_REMOTE_REPOS.keys())}' supported. Commit hashes and filepaths will not be linkified."
+    if repo_vendor and repo_vendor not in SUPPORTED_REMOTE_REPOS.keys():
+        log.info(
+            f"Repository config.repo_vendor '{repo_vendor}' not supported. Only '{', '.join(SUPPORTED_REMOTE_REPOS.keys())}' supported. Commit hashes and filepaths will not be linkified."
         )
-        hostname = ""
+        repo_vendor = ""
 
-    return hostname
+    return repo_vendor
 
 
 def get_recent_changes(
