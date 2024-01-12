@@ -172,6 +172,7 @@ def get_repo_vendor(url: str) -> str:
         log.warning(
             f"Repository config.repo_vendor '{hostname}' not supported. Only '{', '.join(SUPPORTED_REMOTE_REPOS.keys())}' supported. Commit hashes and filepaths will not be linkified."
         )
+        hostname = ""
 
     return hostname
 
