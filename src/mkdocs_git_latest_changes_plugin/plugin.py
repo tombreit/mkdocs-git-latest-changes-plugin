@@ -13,7 +13,6 @@ import html
 # import unicodedata
 from operator import itemgetter
 from dataclasses import dataclass
-from urllib.parse import urlsplit
 
 from git import Repo
 from git.exc import GitCommandError, InvalidGitRepositoryError
@@ -45,6 +44,10 @@ SUPPORTED_REMOTE_REPOS = {
         "hash_url_tpl": "[{linktext}]({repo_url}/-/commit/{commit_hash})",
         "filepath_url_tpl": "[{linktext}]({repo_url}/-/blob/{branch}/{filepath})",
     },
+    "gitea": {
+        "hash_url_tpl": "[{linktext}]({repo_url}/commit/{commit_hash})",
+        "filepath_url_tpl": "[{linktext}]({repo_url}/src/branch/{branch}/{filepath})",
+    },
 }
 
 
@@ -71,17 +74,22 @@ def get_remote_repo_urls(
 ) -> RepoURLs:
     """
     Build URLs for a given git hash, file and a repository as a markdown link. Currently only
-    for Github and Gitlab.
+    for Github, Gitlab and Gitea.
 
     Github:
-    repo_url:   https://github.com/<ns>/<project>
-    commit_url: https://github.com/<ns>/<project>/commit/<hash>
-    file_url:   https://github.com/<ns>/<project>/blob/<branch>/<filepath>
+    repo_url:   https://<repo_url>/<ns>/<project>
+    commit_url: https://<repo_url>/<ns>/<project>/commit/<hash>
+    file_url:   https://<repo_url>/<ns>/<project>/blob/<branch>/<filepath>
 
     Gitlab:
-    repo_url:   https://gitlab.com/<ns>/<project>
-    commit_url: https://gitlab.com/<ns>/<project>/-/commit/<hash>
-    file_url:   https://gitlab.com/<ns>/<project>/-/blob/<branch>/<filepath>
+    repo_url:   https://<repo_url>/<ns>/<project>
+    commit_url: https://<repo_url>/<ns>/<project>/-/commit/<hash>
+    file_url:   https://<repo_url>/<ns>/<project>/-/blob/<branch>/<filepath>
+
+    Gitea:
+    repo_url:   https://<repo_url>/<ns>/<project>
+    commit_url: https://<repo_url>/<ns>/<project>/commit/<hash>
+    file_url:   https://<repo_url>/<ns>/<project>/src/branch/<branch>/<filepath>
     """
 
     # Initialize result dataclass with plain commit_hash and filepath,
@@ -158,16 +166,35 @@ def sanitize_string(string: str) -> str:
     return string
 
 
-def get_repo_vendor(url: str) -> str:
+def get_repo_vendor(url: str, repo_vendor_configured: str, repo_name: str) -> str:
+    """
+    Figure out the repo_vendor (github, gitlab, gitea)
+    """
     repo_vendor = ""
 
-    try:
-        components = urlsplit(url)
-        repo_vendor = components.netloc.split(".")[-2]
-        repo_vendor = repo_vendor.lower()
-    except IndexError:
-        pass
+    if not url:
+        log.info(
+            "No repo_url given. Commit hashes and filepaths will not be linkified."
+        )
 
+    repo_vendor_discovered = repo_name.lower()
+    repo_vendor_configured = repo_vendor_configured.lower()
+
+    if repo_vendor_discovered and repo_vendor_configured:
+        if repo_vendor_configured != repo_vendor_discovered:
+            log.warning(
+                f"Configured remote repo_vendor `{repo_vendor_configured}` differes from discovered repo_vendor `{repo_vendor_discovered}`. Using configured repo_vendor `{repo_vendor_configured}`."
+            )
+        repo_vendor = repo_vendor_configured
+    elif repo_vendor_discovered and not repo_vendor_configured:
+        log.debug(
+            f"Remote repo_vendor not specified (see config `repo_vendor`), using `{repo_vendor_discovered}`."
+        )
+        repo_vendor = repo_vendor_discovered
+    elif not repo_vendor_discovered and repo_vendor_configured:
+        repo_vendor = repo_vendor_configured
+
+    # Unsetting not supported repo_vendor
     if repo_vendor and repo_vendor not in SUPPORTED_REMOTE_REPOS.keys():
         log.info(
             f"Repository config.repo_vendor '{repo_vendor}' not supported. Only '{', '.join(SUPPORTED_REMOTE_REPOS.keys())}' supported. Commit hashes and filepaths will not be linkified."
@@ -273,6 +300,7 @@ def get_recent_changes(
 
 class GitLatestChangesPluginConfig(Config):
     limit_to_docs_dir = config_options.Type(bool, default=False)
+    repo_vendor = config_options.Type(str, default="")
 
 
 class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
@@ -292,7 +320,9 @@ class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
             # Argument "repo_url" to "get_recent_changes" has incompatible type
             # "str | None"; expected "str"  [arg-type]
             repo_url = str(config.repo_url or "")
-            repo_vendor = get_repo_vendor(repo_url)
+            repo_name = str(config.repo_name or "")
+            repo_vendor_configured = self.config.repo_vendor
+            repo_vendor = get_repo_vendor(repo_url, repo_vendor_configured, repo_name)
 
             if self.config.limit_to_docs_dir:
                 log.debug(

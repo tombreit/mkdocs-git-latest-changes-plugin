@@ -19,12 +19,19 @@ MkDocs plugin that allows you to display a list of recently modified pages from 
 - Convert this to a markdown table.
 - Substitute the marker string <code>&#123;&#123; latest_changes &#125;&#125;</code> with this markdown table.
 - Enjoy your latest changes table rendered by your MkDocs theme.
-- Limit <code>&#123;&#123; latest_changes &#125;&#125;</code> to your pages in your `docs_dir` and exclude the git history information for other files from your project repository via plugin config `limit_to_docs_dir` (default: False):
 
-        # mkdocs.yml
-        plugins:
-          - git-latest-changes:
-              limit_to_docs_dir: True
+## Configuration
+
+- Set the "vendor" of your remote repository (currently supported: `github`, `gitlab` and `gitea`) via `repo_vendor` to get linkified commit hashes and filepaths.
+- Limit <code>&#123;&#123; latest_changes &#125;&#125;</code> to your pages in your `docs_dir` and exclude the git history information for other files from your project repository via plugin config `limit_to_docs_dir`:
+
+```yml
+    # mkdocs.yml plugin configuration example
+    plugins:
+      - git-latest-changes:
+          limit_to_docs_dir: True  # [True|False], defaults to False
+          repo_vendor: gitea  # [github|gitlab|gitea], defaults to `repo_name`
+```
 
 ## Hints
 

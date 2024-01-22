@@ -8,3 +8,4 @@ strict: true
 plugins:
   - git-latest-changes:
       limit_to_docs_dir: False
+      repo_vendor: github
