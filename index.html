@@ -85,6 +85,10 @@
               <ul class="nav flex-column">
               </ul>
             </li>
+            <li class="nav-item" data-level="2"><a href="#configuration" class="nav-link">Configuration</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
             <li class="nav-item" data-level="2"><a href="#hints" class="nav-link">Hints</a>
               <ul class="nav flex-column">
               </ul>
@@ -120,13 +124,18 @@ SPDX-License-Identifier: MIT
 <li>Convert this to a markdown table.</li>
 <li>Substitute the marker string <code>&#123;&#123; latest_changes &#125;&#125;</code> with this markdown table.</li>
 <li>Enjoy your latest changes table rendered by your MkDocs theme.</li>
-<li>Limit <code>&#123;&#123; latest_changes &#125;&#125;</code> to your pages in your <code>docs_dir</code> and exclude the git history information for other files from your project repository via plugin config <code>limit_to_docs_dir</code> (default: False):<pre><code># mkdocs.yml
-plugins:
-  - git-latest-changes:
-      limit_to_docs_dir: True
-</code></pre>
-</li>
 </ul>
+<h2 id="configuration">Configuration</h2>
+<ul>
+<li>Set the "vendor" of your remote repository (currently supported: <code>github</code>, <code>gitlab</code> and <code>gitea</code>) via <code>repo_vendor</code> to get linkified commit hashes and filepaths.</li>
+<li>Limit <code>&#123;&#123; latest_changes &#125;&#125;</code> to your pages in your <code>docs_dir</code> and exclude the git history information for other files from your project repository via plugin config <code>limit_to_docs_dir</code>:</li>
+</ul>
+<pre><code class="language-yml">    # mkdocs.yml plugin configuration example
+    plugins:
+      - git-latest-changes:
+          limit_to_docs_dir: True  # [True|False], defaults to False
+          repo_vendor: gitea  # [github|gitlab|gitea], defaults to `repo_name`
+</code></pre>
 <h2 id="hints">Hints</h2>
 <ul>
 <li>This plugin depends of having any commits in the current git branch.</li>
@@ -155,28 +164,28 @@ plugins:
 </thead>
 <tbody>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/mkdocs.yml">mkdocs.yml</a></td>
-<td>2024-01-12 17:28:40</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/docs/index.md">docs/index.md</a></td>
+<td>2024-01-22 20:42:26</td>
 <td>Thomas Breitner</td>
-<td>Never intended for this to be commited...</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/d5a2ed237a2ed7cb6fc1c62195494e0e5a5d4852">d5a2ed2</a></td>
+<td>(Hopefully) linkify commit hashes and filepaths for github, gitlab and gitea (and custom installations of) remote repositories</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/c0f67c203edd22be91dc18f9ef115f4f857bb13e">c0f67c2</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/mkdocs.yml">mkdocs.yml</a></td>
+<td>2024-01-22 20:42:26</td>
+<td>Thomas Breitner</td>
+<td>(Hopefully) linkify commit hashes and filepaths for github, gitlab and gitea (and custom installations of) remote repositories</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/c0f67c203edd22be91dc18f9ef115f4f857bb13e">c0f67c2</a></td>
 </tr>
 <tr>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/src/mkdocs_git_latest_changes_plugin/plugin.py">src/mkdocs_git_latest_changes_plugin/plugin.py</a></td>
-<td>2024-01-12 17:04:44</td>
+<td>2024-01-22 20:42:26</td>
 <td>Thomas Breitner</td>
-<td>Lowered priority from warning to info if detected repo_vendor is not supported yet</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/349188317394fc983a40f5254904b399062bcc8e">3491883</a></td>
+<td>(Hopefully) linkify commit hashes and filepaths for github, gitlab and gitea (and custom installations of) remote repositories</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/c0f67c203edd22be91dc18f9ef115f4f857bb13e">c0f67c2</a></td>
 </tr>
 <tr>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/README.md">README.md</a></td>
-<td>2024-01-12 15:10:41</td>
-<td>Thomas Breitner</td>
-<td>New config option: limit_to_docs_dir</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/6f667fb14d8994ef40336a99755a0874d5dfc47d">6f667fb</a></td>
-</tr>
-<tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/docs/index.md">docs/index.md</a></td>
 <td>2024-01-12 15:10:41</td>
 <td>Thomas Breitner</td>
 <td>New config option: limit_to_docs_dir</td>
@@ -336,5 +345,5 @@ plugins:
 
 <!--
 MkDocs version : 1.5.3
-Build Date UTC : 2024-01-13 23:15:55.909240+00:00
+Build Date UTC : 2024-01-22 19:43:12.099126+00:00
 -->
