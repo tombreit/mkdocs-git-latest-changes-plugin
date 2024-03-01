@@ -9,3 +9,4 @@ plugins:
   - git-latest-changes:
       limit_to_docs_dir: False
       repo_vendor: github
+      enabled_on_serve: True

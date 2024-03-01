@@ -25,7 +25,7 @@ from mkdocs.config.defaults import MkDocsConfig
 from mkdocs.config.base import Config
 from mkdocs.config import config_options
 
-from typing import Optional
+from typing import Optional, Literal, Any
 
 
 log = get_plugin_logger(__name__)
@@ -301,17 +301,39 @@ def get_recent_changes(
 class GitLatestChangesPluginConfig(Config):
     limit_to_docs_dir = config_options.Type(bool, default=False)
     repo_vendor = config_options.Type(str, default="")
+    enabled_on_serve = config_options.Type(bool, default=True)
 
 
 class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
     """
     Mkdocs plugin to render latest changes from Git.
     Reference: https://www.mkdocs.org/user-guide/plugins
+    Adjusting program flow for serve/build adapted from, thanks @squidfunk
+    https://github.com/squidfunk/mkdocs-material/blob/3e862b5e992e934a033413263f60ab0e95ed209f/src/plugins/info/plugin.py#L54
     """
+
+    def __init__(self, *args: Any, **kwargs: Any):
+        super().__init__(*args, **kwargs)
+        self.is_serve = False
+
+    def on_startup(
+        self, *, command: Literal["build", "gh-deploy", "serve"], dirty: bool
+    ) -> None:
+        self.is_serve = command == "serve"
+
+    def on_config(self, config: MkDocsConfig) -> MkDocsConfig:
+        if not self.config.enabled_on_serve and self.is_serve:
+            log.info(
+                "Plugin deactivated during `serve`. Hint: config option `enabled_on_serve`"
+            )
+        return config
 
     def on_page_markdown(
         self, markdown: str, /, *, page: Page, config: MkDocsConfig, files: Files
     ) -> Optional[str]:
+        if not self.config.enabled_on_serve and self.is_serve:
+            return None
+
         marker = "{{ latest_changes }}"
         if marker in markdown:
             log.debug(f"Found latest_changes marker in {page.file.src_uri}")

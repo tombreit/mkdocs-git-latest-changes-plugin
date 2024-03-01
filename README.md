@@ -36,3 +36,9 @@ plugins:
 ## Usage
 
 Use `{{ latest_changes }}` in your Markdown page(s) where the latest git changes should be inserted as a table.
+
+## Development
+
+```bash
+pip install -e .[dev]
+```
