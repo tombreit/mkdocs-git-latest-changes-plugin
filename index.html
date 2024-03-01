@@ -126,16 +126,27 @@ SPDX-License-Identifier: MIT
 <li>Enjoy your latest changes table rendered by your MkDocs theme.</li>
 </ul>
 <h2 id="configuration">Configuration</h2>
-<ul>
-<li>Set the "vendor" of your remote repository (currently supported: <code>github</code>, <code>gitlab</code> and <code>gitea</code>) via <code>repo_vendor</code> to get linkified commit hashes and filepaths.</li>
-<li>Limit <code>&#123;&#123; latest_changes &#125;&#125;</code> to your pages in your <code>docs_dir</code> and exclude the git history information for other files from your project repository via plugin config <code>limit_to_docs_dir</code>:</li>
-</ul>
 <pre><code class="language-yml">    # mkdocs.yml plugin configuration example
     plugins:
       - git-latest-changes:
           limit_to_docs_dir: True  # [True|False], defaults to False
           repo_vendor: gitea  # [github|gitlab|gitea], defaults to `repo_name`
+          enabled_on_serve: True  # [True|False], defaults to True
 </code></pre>
+<ul>
+<li>
+<p><code>repo_vendor</code></p>
+<p>Set the "vendor" of your remote repository (currently supported: <code>github</code>, <code>gitlab</code> and <code>gitea</code>) via <code>repo_vendor</code> to get linkified commit hashes and filepaths.</p>
+</li>
+<li>
+<p><code>limit_to_docs_dir</code></p>
+<p>Limit <code>&#123;&#123; latest_changes &#125;&#125;</code> to your pages in your <code>docs_dir</code> and exclude the git history information for other files from your project repository via plugin config <code>limit_to_docs_dir</code>.</p>
+</li>
+<li>
+<p><code>enabled_on_serve</code></p>
+<p>Not amused by slow builds during <code>serve</code> while developing your docs? Disable this plugin only when running MkDocs via <code>mkdocs serve</code> and only trigger this plugins functionality on builds (<code>mkdocs build</code>). Defaults to <code>True</code>.</p>
+</li>
+</ul>
 <h2 id="hints">Hints</h2>
 <ul>
 <li>This plugin depends of having any commits in the current git branch.</li>
@@ -164,32 +175,39 @@ SPDX-License-Identifier: MIT
 </thead>
 <tbody>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/docs/index.md">docs/index.md</a></td>
-<td>2024-01-22 20:42:26</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/README.md">README.md</a></td>
+<td>2024-03-01 17:09:44</td>
 <td>Thomas Breitner</td>
-<td>(Hopefully) linkify commit hashes and filepaths for github, gitlab and gitea (and custom installations of) remote repositories</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/c0f67c203edd22be91dc18f9ef115f4f857bb13e">c0f67c2</a></td>
+<td>New config option enabled_on_serve to disable this plugin only on mkdocs serve</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/f467fec88ec55d34eeacf9a525adddd334dbb602">f467fec</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/docs/index.md">docs/index.md</a></td>
+<td>2024-03-01 17:09:44</td>
+<td>Thomas Breitner</td>
+<td>New config option enabled_on_serve to disable this plugin only on mkdocs serve</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/f467fec88ec55d34eeacf9a525adddd334dbb602">f467fec</a></td>
 </tr>
 <tr>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/mkdocs.yml">mkdocs.yml</a></td>
-<td>2024-01-22 20:42:26</td>
+<td>2024-03-01 17:09:44</td>
 <td>Thomas Breitner</td>
-<td>(Hopefully) linkify commit hashes and filepaths for github, gitlab and gitea (and custom installations of) remote repositories</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/c0f67c203edd22be91dc18f9ef115f4f857bb13e">c0f67c2</a></td>
+<td>New config option enabled_on_serve to disable this plugin only on mkdocs serve</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/f467fec88ec55d34eeacf9a525adddd334dbb602">f467fec</a></td>
 </tr>
 <tr>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/src/mkdocs_git_latest_changes_plugin/plugin.py">src/mkdocs_git_latest_changes_plugin/plugin.py</a></td>
-<td>2024-01-22 20:42:26</td>
+<td>2024-03-01 17:09:44</td>
 <td>Thomas Breitner</td>
-<td>(Hopefully) linkify commit hashes and filepaths for github, gitlab and gitea (and custom installations of) remote repositories</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/c0f67c203edd22be91dc18f9ef115f4f857bb13e">c0f67c2</a></td>
+<td>New config option enabled_on_serve to disable this plugin only on mkdocs serve</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/f467fec88ec55d34eeacf9a525adddd334dbb602">f467fec</a></td>
 </tr>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/README.md">README.md</a></td>
-<td>2024-01-12 15:10:41</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/.pre-commit-config.yaml">.pre-commit-config.yaml</a></td>
+<td>2024-03-01 17:09:02</td>
 <td>Thomas Breitner</td>
-<td>New config option: limit_to_docs_dir</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/6f667fb14d8994ef40336a99755a0874d5dfc47d">6f667fb</a></td>
+<td>Upgraded pre-commit repo versions</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/b7de1e2f3ff2e1651afc5d5e3c2177258c494464">b7de1e2</a></td>
 </tr>
 <tr>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/tests/test_mkdocs_git_latest_changes_plugin.py">tests/test_mkdocs_git_latest_changes_plugin.py</a></td>
@@ -218,13 +236,6 @@ SPDX-License-Identifier: MIT
 <td>Thomas Breitner</td>
 <td>(Hopefully) sanitize git log strings</td>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/7d53ff41d6db0cb7e8a2d09b6104c2784b6685dd">7d53ff4</a></td>
-</tr>
-<tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/.pre-commit-config.yaml">.pre-commit-config.yaml</a></td>
-<td>2024-01-11 15:48:47</td>
-<td>Thomas Breitner</td>
-<td>mypy: Exclude test dir (for now)</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/b63bacf41eeb089bc9fb0af358811ca064809967">b63bacf</a></td>
 </tr>
 <tr>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/.gitignore">.gitignore</a></td>
@@ -345,5 +356,5 @@ SPDX-License-Identifier: MIT
 
 <!--
 MkDocs version : 1.5.3
-Build Date UTC : 2024-01-22 19:51:52.657319+00:00
+Build Date UTC : 2024-03-01 16:10:54.301230+00:00
 -->
