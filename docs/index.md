@@ -33,7 +33,7 @@ MkDocs plugin that allows you to display a list of recently modified pages from 
 
 - `repo_vendor`
 
-    Set the "vendor" of your remote repository (currently supported: `github`, `gitlab` and `gitea`) via `repo_vendor` to get linkified commit hashes and filepaths.
+    Set the "vendor" of your remote repository (currently supported: `bitbucket`, `github`, `gitlab` and `gitea`) via `repo_vendor` to get linkified commit hashes and filepaths.
 
 - `limit_to_docs_dir`
 
