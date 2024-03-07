@@ -48,6 +48,10 @@ SUPPORTED_REMOTE_REPOS = {
         "hash_url_tpl": "[{linktext}]({repo_url}/commit/{commit_hash})",
         "filepath_url_tpl": "[{linktext}]({repo_url}/src/branch/{branch}/{filepath})",
     },
+    "bitbucket": {
+        "hash_url_tpl": "[{linktext}]({repo_url}/commits/{commit_hash})",
+        "filepath_url_tpl": "[{linktext}]({repo_url}/browse/{filepath}?at={branch})",
+    },
 }
 
 
@@ -90,6 +94,11 @@ def get_remote_repo_urls(
     repo_url:   https://<repo_url>/<ns>/<project>
     commit_url: https://<repo_url>/<ns>/<project>/commit/<hash>
     file_url:   https://<repo_url>/<ns>/<project>/src/branch/<branch>/<filepath>
+
+    Bitbucket:
+    repo_url:   https://<repo_url>/projects/<ns>/repos/<project>
+    commit_url: https://<repo_url>/projects/<ns>/repos/<project>/commits/<hash>
+    file_url:   https://<repo_url>/projects/<ns>/repos/<project>/browse/<filepath>?at=<branch>
     """
 
     # Initialize result dataclass with plain commit_hash and filepath,
@@ -168,7 +177,7 @@ def sanitize_string(string: str) -> str:
 
 def get_repo_vendor(url: str, repo_vendor_configured: str, repo_name: str) -> str:
     """
-    Figure out the repo_vendor (github, gitlab, gitea)
+    Figure out the repo_vendor (bitbucket, github, gitlab, gitea)
     """
     repo_vendor = ""
 
