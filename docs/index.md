@@ -46,7 +46,7 @@ MkDocs plugin that allows you to display a list of recently modified pages from 
 
 - `history_limit`
 
-   Not interested in all the old commits? Limit the table of recent changes using `history_limit = N`. N should be a positive integer, negative values or zero disables this option.
+    Not interested in all the old commits? Limit the table of recent changes using `history_limit = N`. N should be a positive integer, negative values or zero disables this option.
 
 
 ## Hints
