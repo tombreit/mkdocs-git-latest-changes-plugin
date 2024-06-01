@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,9 +10,13 @@
         <link rel="shortcut icon" href="img/favicon.ico">
         <title>mkdocs-git-latest-changes-plugin</title>
         <link href="css/bootstrap.min.css" rel="stylesheet">
-        <link href="css/font-awesome.min.css" rel="stylesheet">
+        <link href="css/fontawesome.min.css" rel="stylesheet">
+        <link href="css/brands.min.css" rel="stylesheet">
+        <link href="css/solid.min.css" rel="stylesheet">
+        <link href="css/v4-font-face.min.css" rel="stylesheet">
         <link href="css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
         <script>hljs.highlightAll();</script> 
     </head>
@@ -22,7 +26,7 @@
             <div class="container">
                 <a class="navbar-brand" href=".">mkdocs-git-latest-changes-plugin</a>
                 <!-- Expander button -->
-                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
@@ -30,14 +34,14 @@
                 <div id="navbar-collapse" class="navbar-collapse collapse">
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
-                            <li class="navitem active">
-                                <a href="." class="nav-link">Home</a>
+                            <li class="nav-item">
+                                <a href="." class="nav-link active" aria-current="page">Home</a>
                             </li>
-                            <li class="navitem">
+                            <li class="nav-item">
                                 <a href="test/" class="nav-link">Test</a>
                             </li>
-                            <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Subdir <b class="caret"></b></a>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Subdir</a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -47,7 +51,7 @@
                             </li>
                         </ul>
 
-                    <ul class="nav navbar-nav ml-auto">
+                    <ul class="nav navbar-nav ms-md-auto">
                             <li class="nav-item">
                                 <a rel="prev" class="nav-link disabled">
                                     <i class="fa fa-arrow-left"></i> Previous
@@ -59,7 +63,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/edit/master/docs/index.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
+                                <a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/edit/master/docs/index.md" class="nav-link"><i class="fa-brands fa-github"></i> Edit on GitHub</a>
                             </li>
                     </ul>
                 </div>
@@ -68,32 +72,32 @@
 
         <div class="container">
             <div class="row">
-                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
     <div class="navbar-header">
-        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
             <span class="fa fa-angle-down"></span>
         </button>
     </div>
 
     
-    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
         <ul class="nav flex-column">
             
-            <li class="nav-item" data-level="1"><a href="#mkdocs-git-latest-changes-plugin" class="nav-link">mkdocs-git-latest-changes-plugin</a>
+            <li class="nav-item" data-bs-level="1"><a href="#mkdocs-git-latest-changes-plugin" class="nav-link">mkdocs-git-latest-changes-plugin</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#features" class="nav-link">Features</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#configuration" class="nav-link">Configuration</a>
+            <li class="nav-item" data-bs-level="2"><a href="#features" class="nav-link">Features</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-level="2"><a href="#hints" class="nav-link">Hints</a>
+            <li class="nav-item" data-bs-level="2"><a href="#configuration" class="nav-link">Configuration</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-level="2"><a href="#latest-changes-demo" class="nav-link">Latest changes demo</a>
+            <li class="nav-item" data-bs-level="2"><a href="#hints" class="nav-link">Hints</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#latest-changes-demo" class="nav-link">Latest changes demo</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -132,6 +136,7 @@ SPDX-License-Identifier: MIT
           limit_to_docs_dir: True  # [True|False], defaults to False
           repo_vendor: gitea  # [github|gitlab|gitea], defaults to `repo_name`
           enabled_on_serve: True  # [True|False], defaults to True
+          history_limit: 5  # [Integer, defaults to -1 (no history limit)]
 </code></pre>
 <ul>
 <li>
@@ -146,7 +151,11 @@ SPDX-License-Identifier: MIT
 <p><code>enabled_on_serve</code></p>
 <p>Not amused by slow builds during <code>serve</code> while developing your docs? Disable this plugin only when running MkDocs via <code>mkdocs serve</code> and only trigger this plugins functionality on builds (<code>mkdocs build</code>). Defaults to <code>True</code>.</p>
 </li>
+<li>
+<p><code>history_limit</code></p>
+</li>
 </ul>
+<p>Not interested in all the old commits? Limit the table of recent changes using <code>history_limit = N</code>. N should be a positive integer, negative values or zero disables this option.</p>
 <h2 id="hints">Hints</h2>
 <ul>
 <li>This plugin depends of having any commits in the current git branch.</li>
@@ -175,46 +184,60 @@ SPDX-License-Identifier: MIT
 </thead>
 <tbody>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/docs/index.md">docs/index.md</a></td>
-<td>2024-03-07 11:34:38</td>
-<td>Valentin Delaye</td>
-<td>Add support for Bitbucket Server</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/a1137b2c6df05c3ec42337e307de56f70d59157e">a1137b2</a></td>
-</tr>
-<tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/src/mkdocs_git_latest_changes_plugin/plugin.py">src/mkdocs_git_latest_changes_plugin/plugin.py</a></td>
-<td>2024-03-07 11:34:38</td>
-<td>Valentin Delaye</td>
-<td>Add support for Bitbucket Server</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/a1137b2c6df05c3ec42337e307de56f70d59157e">a1137b2</a></td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/.github/workflows/tests.yml">.github/workflows/tests.yml</a></td>
+<td>2024-06-01 18:14:59</td>
+<td>Thomas Breitner</td>
+<td>Run pytest in gh action</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/1d7612b99993d56caf2438344fafc1515e255dcb">1d7612b</a></td>
 </tr>
 <tr>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/README.md">README.md</a></td>
-<td>2024-03-01 17:09:44</td>
+<td>2024-06-01 18:13:58</td>
 <td>Thomas Breitner</td>
-<td>New config option enabled_on_serve to disable this plugin only on mkdocs serve</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/f467fec88ec55d34eeacf9a525adddd334dbb602">f467fec</a></td>
+<td>New config option: history_limit</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/e43a5632eaa511eb2fe54c9a326fc29e9a9f5d03">e43a563</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/docs/index.md">docs/index.md</a></td>
+<td>2024-06-01 18:13:58</td>
+<td>Thomas Breitner</td>
+<td>New config option: history_limit</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/e43a5632eaa511eb2fe54c9a326fc29e9a9f5d03">e43a563</a></td>
 </tr>
 <tr>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/mkdocs.yml">mkdocs.yml</a></td>
-<td>2024-03-01 17:09:44</td>
+<td>2024-06-01 18:13:58</td>
 <td>Thomas Breitner</td>
-<td>New config option enabled_on_serve to disable this plugin only on mkdocs serve</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/f467fec88ec55d34eeacf9a525adddd334dbb602">f467fec</a></td>
+<td>New config option: history_limit</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/e43a5632eaa511eb2fe54c9a326fc29e9a9f5d03">e43a563</a></td>
 </tr>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/.pre-commit-config.yaml">.pre-commit-config.yaml</a></td>
-<td>2024-03-01 17:09:02</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/src/mkdocs_git_latest_changes_plugin/plugin.py">src/mkdocs_git_latest_changes_plugin/plugin.py</a></td>
+<td>2024-06-01 18:13:58</td>
 <td>Thomas Breitner</td>
-<td>Upgraded pre-commit repo versions</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/b7de1e2f3ff2e1651afc5d5e3c2177258c494464">b7de1e2</a></td>
+<td>New config option: history_limit</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/e43a5632eaa511eb2fe54c9a326fc29e9a9f5d03">e43a563</a></td>
 </tr>
 <tr>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/tests/test_mkdocs_git_latest_changes_plugin.py">tests/test_mkdocs_git_latest_changes_plugin.py</a></td>
-<td>2024-01-12 15:10:41</td>
+<td>2024-06-01 18:13:58</td>
 <td>Thomas Breitner</td>
-<td>New config option: limit_to_docs_dir</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/6f667fb14d8994ef40336a99755a0874d5dfc47d">6f667fb</a></td>
+<td>New config option: history_limit</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/e43a5632eaa511eb2fe54c9a326fc29e9a9f5d03">e43a563</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/.pre-commit-config.yaml">.pre-commit-config.yaml</a></td>
+<td>2024-06-01 16:02:26</td>
+<td>Thomas Breitner</td>
+<td>Bumped pre-commit hooks and freezed GitPython version</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/ff6373e83bd2391d5c0fbf1b11eba1cdbb9ec95a">ff6373e</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/pyproject.toml">pyproject.toml</a></td>
+<td>2024-06-01 16:02:26</td>
+<td>Thomas Breitner</td>
+<td>Bumped pre-commit hooks and freezed GitPython version</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/ff6373e83bd2391d5c0fbf1b11eba1cdbb9ec95a">ff6373e</a></td>
 </tr>
 <tr>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/docs/subdir/index.md">docs/subdir/index.md</a></td>
@@ -222,20 +245,6 @@ SPDX-License-Identifier: MIT
 <td>Thomas Breitner</td>
 <td>Added sub directory to test new config option</td>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/c987c897d1bc4a8fc942d49a23c382bc4e5a2558">c987c89</a></td>
-</tr>
-<tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/.github/workflows/tests.yml">.github/workflows/tests.yml</a></td>
-<td>2024-01-11 15:58:48</td>
-<td>Thomas Breitner</td>
-<td>Fixed ruff path in gh action</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/68c585fc72c2f9978b13b48a92172f3a213a35b5">68c585f</a></td>
-</tr>
-<tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/pyproject.toml">pyproject.toml</a></td>
-<td>2024-01-11 15:49:37</td>
-<td>Thomas Breitner</td>
-<td>(Hopefully) sanitize git log strings</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/7d53ff41d6db0cb7e8a2d09b6104c2784b6685dd">7d53ff4</a></td>
 </tr>
 <tr>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/.gitignore">.gitignore</a></td>
@@ -302,8 +311,7 @@ SPDX-License-Identifier: MIT
             <hr>
             <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
         </footer>
-        <script src="js/jquery-3.6.0.min.js"></script>
-        <script src="js/bootstrap.min.js"></script>
+        <script src="js/bootstrap.bundle.min.js"></script>
         <script>
             var base_url = ".",
                 shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
@@ -315,7 +323,7 @@ SPDX-License-Identifier: MIT
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
               <table class="table">
@@ -355,6 +363,6 @@ SPDX-License-Identifier: MIT
 </html>
 
 <!--
-MkDocs version : 1.5.3
-Build Date UTC : 2024-03-07 10:42:21.066134+00:00
+MkDocs version : 1.6.0
+Build Date UTC : 2024-06-01 16:15:25.538343+00:00
 -->
