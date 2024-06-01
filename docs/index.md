@@ -29,6 +29,7 @@ MkDocs plugin that allows you to display a list of recently modified pages from 
           limit_to_docs_dir: True  # [True|False], defaults to False
           repo_vendor: gitea  # [github|gitlab|gitea], defaults to `repo_name`
           enabled_on_serve: True  # [True|False], defaults to True
+          history_limit: 5  # [Integer, defaults to -1 (no history limit)]
 ```
 
 - `repo_vendor`
@@ -42,6 +43,10 @@ MkDocs plugin that allows you to display a list of recently modified pages from 
 - `enabled_on_serve`
 
     Not amused by slow builds during `serve` while developing your docs? Disable this plugin only when running MkDocs via `mkdocs serve` and only trigger this plugins functionality on builds (`mkdocs build`). Defaults to `True`.
+
+- `history_limit`
+
+   Not interested in all the old commits? Limit the table of recent changes using `history_limit = N`. N should be a positive integer, negative values or zero disables this option.
 
 
 ## Hints

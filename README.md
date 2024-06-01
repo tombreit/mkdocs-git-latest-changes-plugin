@@ -37,6 +37,10 @@ plugins:
 
 Use `{{ latest_changes }}` in your Markdown page(s) where the latest git changes should be inserted as a table.
 
+### Configuration
+
+<https://tombreit.github.io/mkdocs-git-latest-changes-plugin/#configuration>
+
 ## Development
 
 ```bash

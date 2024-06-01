@@ -10,3 +10,4 @@ plugins:
       limit_to_docs_dir: False
       repo_vendor: github
       enabled_on_serve: True
+      history_limit: -1

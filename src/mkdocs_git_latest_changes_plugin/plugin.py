@@ -141,14 +141,14 @@ def render_table(loginfos: list[dict[str, str]]) -> str:
     rows: list[list[str]] = []
     for index, loginfo in enumerate(loginfos):
         if index == 0:
-            column_header_row = [column_header for column_header in loginfo.keys()]
+            column_header_row = list(loginfo.keys())
             separator_row = [
                 "-" * len(column_header) for column_header in column_header_row
             ]
-            data_row = [cell for cell in loginfo.values()]
+            data_row = list(loginfo.values())
             rows.extend([column_header_row] + [separator_row] + [data_row])
         else:
-            data_row = [cell for cell in loginfo.values()]
+            data_row = list(loginfo.values())
             rows.append(data_row)
 
     # Convert the internal representation to markdown table
@@ -214,7 +214,7 @@ def get_repo_vendor(url: str, repo_vendor_configured: str, repo_name: str) -> st
 
 
 def get_recent_changes(
-    *, repo_url: str, repo_vendor: str, limit_to_docs_dir: str
+    *, repo_url: str, repo_vendor: str, limit_to_docs_dir: str, history_limit: int
 ) -> str:
     try:
         repo = Repo()
@@ -235,6 +235,9 @@ def get_recent_changes(
         log.debug(f"Initialized repo `{repo}`, branch `{branch}`...")
         files = git.ls_files(limit_to_docs_dir)
         files = files.split("\n")
+
+    history_limit = history_limit if history_limit > 0 else False
+    log.debug(f"history_limit set: {history_limit}.")
 
     log.info(f"{len(files)} files found in git index and working tree.")
     loginfos = []
@@ -288,6 +291,7 @@ def get_recent_changes(
             del fileinfo["hash_short"]
 
             loginfos.append(fileinfo)
+
         except GitCommandError as git_command_error:
             # Only log a warning to allow running via `--no-strict`
             msg = get_error_message(git_command_error)
@@ -304,6 +308,10 @@ def get_recent_changes(
 
     loginfos = sorted(loginfos, key=itemgetter("Timestamp"), reverse=True)
 
+    # Only use this loginfo object if not excluded via history_limit
+    if history_limit and len(loginfos) > history_limit:
+        loginfos = loginfos[:history_limit]
+
     return render_table(loginfos)
 
 
@@ -311,6 +319,7 @@ class GitLatestChangesPluginConfig(Config):
     limit_to_docs_dir = config_options.Type(bool, default=False)
     repo_vendor = config_options.Type(str, default="")
     enabled_on_serve = config_options.Type(bool, default=True)
+    history_limit = config_options.Type(int, default=-1)
 
 
 class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
@@ -368,6 +377,7 @@ class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
                 repo_url=repo_url,
                 repo_vendor=repo_vendor,
                 limit_to_docs_dir=limit_to_docs_dir,
+                history_limit=self.config.history_limit,
             )
 
             markdown = markdown.replace(marker, latest_changes)

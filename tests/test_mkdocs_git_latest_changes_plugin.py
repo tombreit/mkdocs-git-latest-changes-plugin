@@ -208,3 +208,74 @@ def test_commit_message_conversion(project: Repo, msg: str, msg_rendered: str) -
 
         # The commit message should be displayed in the generated <table>
         assert re.search(f"<td>{msg_rendered}</td>", contents)
+
+
+def test_mkdocs_w_history_limit_config(project: Repo):
+    with working_directory(project.working_tree_dir):
+        FIRST_COMMIT_MSG = "First commit message"
+        SECOND_COMMIT_MSG = "Second commit message"
+
+        config_file_path = Path(PRROJECT_CONFIG)
+
+        # Test if a file not in docs_dir is included in {{ latest_changes }}
+        config_file_path.write_text(
+            """
+site_name: mkdocs-plugin-test
+strict: true
+plugins:
+  - git-latest-changes
+        """
+        )
+
+        project.index.add([str(config_file_path)])
+        project.index.commit(FIRST_COMMIT_MSG)
+
+        latest_changes_file_path = (
+            Path(project.working_tree_dir)
+            / DOCS_DIR
+            / f"{PAGE_W_LATEST_CHANGES_FILENAME}.md"
+        )
+        latest_changes_file_path.write_text("{{ latest_changes }}")
+
+        project.index.add([str(latest_changes_file_path)])
+        project.index.commit(SECOND_COMMIT_MSG)
+
+        assert run_build(project.working_tree_dir)
+
+        latest_changes_page = (
+            Path(project.working_tree_dir)
+            / BUILD_DIR
+            / PAGE_W_LATEST_CHANGES_FILENAME
+            / "index.html"
+        )
+        assert latest_changes_page.exists()
+
+        contents = latest_changes_page.read_text()
+
+        assert re.search(
+            f"<td>{FIRST_COMMIT_MSG}</td>",
+            contents,
+        )
+
+        assert re.search(
+            f"<td>{SECOND_COMMIT_MSG}</td>",
+            contents,
+        )
+
+        # New config with history_limit
+        config_file_path.write_text(
+            """
+site_name: mkdocs-plugin-test
+strict: true
+plugins:
+  - git-latest-changes:
+      history_limit: 1
+        """
+        )
+
+        assert run_build(project.working_tree_dir)
+        contents = latest_changes_page.read_text()
+        assert not re.search(
+            f"<td>{FIRST_COMMIT_MSG}</td>",
+            contents,
+        )
