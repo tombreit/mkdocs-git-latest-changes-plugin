@@ -35,6 +35,8 @@ jobs:
         uses: chartboost/ruff-action@v1
         with:
           src: "./src"
+      - name: Run pytest
+        run: pytest .
 
   ghpages:
     uses: ./.github/workflows/ghpages.yml
