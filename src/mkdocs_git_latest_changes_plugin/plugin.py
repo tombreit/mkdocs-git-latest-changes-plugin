@@ -309,10 +309,17 @@ def get_recent_changes(
     loginfos = sorted(loginfos, key=itemgetter("Timestamp"), reverse=True)
 
     # Only use this loginfo object if not excluded via history_limit
+    history_limit_hint = ""
     if history_limit and len(loginfos) > history_limit:
         loginfos = loginfos[:history_limit]
 
-    return render_table(loginfos)
+        _pluralized_string = (
+            "entry is" if history_limit == 1 else f"{history_limit} entries are"
+        )
+        _style = "margin-bottom: 1em; margin-top: 1em; padding-top: .5em; font-style: italic; font-size: smaller;"
+        history_limit_hint = f'\n<p style="{_style}">Only the most recent {_pluralized_string} displayed.</p>'
+
+    return f"{render_table(loginfos)}{history_limit_hint}"
 
 
 class GitLatestChangesPluginConfig(Config):
