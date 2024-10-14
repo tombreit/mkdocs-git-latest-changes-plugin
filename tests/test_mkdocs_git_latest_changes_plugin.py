@@ -72,6 +72,34 @@ def project(tmp_path):
     repo.close()
     shutil.rmtree(repo_path)
 
+@pytest.fixture
+def project_w_subdir(tmp_path):
+    # Create a temporary directory for the Git repository
+    repo_path = tmp_path / "test_repo"
+    # Under repo_path create another dir called "subdir"
+    repo_path_subdir = repo_path / "subdir"
+    repo_path_subdir.mkdir(parents=True)
+    repo = Repo.init(repo_path)
+
+    # Bootstrap mkdocs project
+    config_file_path = repo_path_subdir / PRROJECT_CONFIG
+    config_file_path.write_text(
+        "site_name: mkdocs-plugin-test\nrepo_name: github\nplugins:\n  - git-latest-changes"
+    )
+
+    docs_dir = repo_path_subdir / DOCS_DIR
+    docs_dir.mkdir(parents=True, exist_ok=True)
+
+    page_file_path = repo_path_subdir / DOCS_DIR / "index.md"
+    page_file_path.write_text("# Home")
+
+    # Yield the repository object to the tests
+    yield repo
+
+    # Clean up: Delete the temporary repository after the test
+    repo.close()
+    shutil.rmtree(repo_path)
+
 
 def run_build(dir) -> subprocess.CompletedProcess[bytes]:
     with working_directory(dir):
@@ -279,3 +307,39 @@ plugins:
             f"<td>{FIRST_COMMIT_MSG}</td>",
             contents,
         )
+
+def test_mkdocs_w_git_dir_in_parent_dir_config(project_w_subdir: Repo):
+        with working_directory(project_w_subdir.working_tree_dir):
+            # Simulate another subdir between working_tree_dir and DOCS_DIR
+            latest_changes_file_path = (
+                Path(project_w_subdir.working_tree_dir)
+                / 'subdir'
+                / DOCS_DIR
+                / f"{PAGE_W_LATEST_CHANGES_FILENAME}.md"
+            )
+            latest_changes_file_path.write_text("{{ latest_changes }}")
+
+            project_w_subdir.index.add([str(latest_changes_file_path)])
+            project_w_subdir.index.commit("Added latest changes page in subdir")
+            assert project_w_subdir.head.is_valid()
+
+            assert run_build(project_w_subdir.working_tree_dir + '/subdir')
+
+            latest_changes_page = (
+                Path(project_w_subdir.working_tree_dir)
+                / 'subdir'
+                / BUILD_DIR
+                / PAGE_W_LATEST_CHANGES_FILENAME
+                / "index.html"
+            )
+            assert latest_changes_page.exists(), "%s does not exist" % latest_changes_page
+
+            contents = latest_changes_page.read_text()
+            # print(f"{contents=}")
+
+            # The marker `{{ latest_changes }}` should not exist in the generated page
+            assert not re.search("{{ latest_changes }}", contents)
+
+            # The commit message should be displayed in the generated <table>
+            assert re.search(f"<td>Added latest changes page in subdir</td>", contents)
+
