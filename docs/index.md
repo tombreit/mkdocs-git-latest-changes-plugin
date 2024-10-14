@@ -27,7 +27,6 @@ MkDocs plugin that allows you to display a list of recently modified pages from 
     plugins:
       - git-latest-changes:
           limit_to_docs_dir: True  # [True|False], defaults to False
-          local_git_repo_root: . # relative or absolute path to root of git repository, defaults to "." (dir of mkdocs.yml)
           repo_vendor: gitea  # [github|gitlab|gitea], defaults to `repo_name`
           enabled_on_serve: True  # [True|False], defaults to True
           history_limit: 5  # [Integer, defaults to -1 (no history limit)]
@@ -36,10 +35,6 @@ MkDocs plugin that allows you to display a list of recently modified pages from 
 - `repo_vendor`
 
     Set the "vendor" of your remote repository (currently supported: `bitbucket`, `github`, `gitlab` and `gitea`) via `repo_vendor` to get linkified commit hashes and filepaths.
-
-- `local_git_repo_root`
-
-    Override location for .git folder to make this plugin compatible with repository structures in which `mkdocs.yml` is not directly at repository root. For example if you are working with `<repo root>/documentation/mkdocs.yml`, set `local_git_repo_root` to `..`. Can help to fix `InvalidGitRepositoryError`.
 
 - `limit_to_docs_dir`
 
@@ -57,7 +52,7 @@ MkDocs plugin that allows you to display a list of recently modified pages from 
 ## Hints
 
 - This plugin depends of having any commits in the current git branch.
-- An error will be raised/rendered if no git repository exists. Adjust `local_git_repo_root` if needed.
+- An error will be raised/rendered if no git repository exists.
 - For linked git commit hashes and filenames, the MkDocs config variable `repo_url` must be set and point to a Github or Gitlab repository.
 - Relax warnings with `--no-strict` (via MkDocs [strict configuration](https://www.mkdocs.org/user-guide/configuration/#strict), [cli](https://www.mkdocs.org/user-guide/cli/)), e.g. if a expected file is not in the git working tree.
 - Log level: Request debug information for this plugin via MkDocs `--verbose / -v` command line flag.

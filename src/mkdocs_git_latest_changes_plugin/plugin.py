@@ -214,15 +214,10 @@ def get_repo_vendor(url: str, repo_vendor_configured: str, repo_name: str) -> st
 
 
 def get_recent_changes(
-    *, repo_url: str, local_git_repo_root: str, repo_vendor: str, limit_to_docs_dir: str, history_limit: int
+    *, repo_url: str, repo_vendor: str, limit_to_docs_dir: str, history_limit: int
 ) -> str:
     try:
-        if local_git_repo_root == ".":
-            repo = Repo()
-        else:
-            repo = Repo(local_git_repo_root)
-            log.info(f"Using modified local_git_repo_root `{local_git_repo_root}`")
-
+        repo = Repo()
         branch = repo.active_branch
         git = repo.git
     except InvalidGitRepositoryError as invalid_repo_error:
@@ -329,7 +324,6 @@ def get_recent_changes(
 
 class GitLatestChangesPluginConfig(Config):
     limit_to_docs_dir = config_options.Type(bool, default=False)
-    local_git_repo_root = config_options.Type(str, default='.')
     repo_vendor = config_options.Type(str, default="")
     enabled_on_serve = config_options.Type(bool, default=True)
     history_limit = config_options.Type(int, default=-1)
@@ -388,7 +382,6 @@ class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
 
             latest_changes = get_recent_changes(
                 repo_url=repo_url,
-                local_git_repo_root=self.config.local_git_repo_root,
                 repo_vendor=repo_vendor,
                 limit_to_docs_dir=limit_to_docs_dir,
                 history_limit=self.config.history_limit,

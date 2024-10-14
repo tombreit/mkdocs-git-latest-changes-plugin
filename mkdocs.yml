@@ -8,7 +8,6 @@ strict: true
 plugins:
   - git-latest-changes:
       limit_to_docs_dir: False
-      local_git_repo_root: .
       repo_vendor: github
       enabled_on_serve: True
       history_limit: -1
