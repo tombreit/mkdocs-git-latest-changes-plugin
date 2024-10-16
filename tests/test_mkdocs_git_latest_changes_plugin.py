@@ -47,56 +47,29 @@ def working_directory(path):
 
 
 @pytest.fixture
-def project(tmp_path):
-    # Create a temporary directory for the Git repository
+def project(tmp_path, request=None):
+    subdir_path = getattr(request, "param", "") if request else ""
     repo_path = tmp_path / "test_repo"
-    repo_path.mkdir()
+    nested_path = repo_path / subdir_path if subdir_path else repo_path
+    nested_path.mkdir(parents=True, exist_ok=True)
     repo = Repo.init(repo_path)
 
-    # Bootstrap mkdocs project
-    config_file_path = repo_path / PRROJECT_CONFIG
+    config_file_path = nested_path / PRROJECT_CONFIG
     config_file_path.write_text(
         "site_name: mkdocs-plugin-test\nrepo_name: github\nplugins:\n  - git-latest-changes"
     )
 
-    docs_dir = repo_path / DOCS_DIR
+    docs_dir = nested_path / DOCS_DIR
     docs_dir.mkdir(parents=True, exist_ok=True)
 
-    page_file_path = repo_path / DOCS_DIR / "index.md"
+    page_file_path = nested_path / DOCS_DIR / "index.md"
     page_file_path.write_text("# Home")
 
-    # Yield the repository object to the tests
+    # Store nested_path as an attribute of the repo object
+    repo.nested_path = nested_path
+
     yield repo
 
-    # Clean up: Delete the temporary repository after the test
-    repo.close()
-    shutil.rmtree(repo_path)
-
-@pytest.fixture
-def project_w_subdir(tmp_path):
-    # Create a temporary directory for the Git repository
-    repo_path = tmp_path / "test_repo"
-    # Under repo_path create another dir called "subdir"
-    repo_path_subdir = repo_path / "subdir"
-    repo_path_subdir.mkdir(parents=True)
-    repo = Repo.init(repo_path)
-
-    # Bootstrap mkdocs project
-    config_file_path = repo_path_subdir / PRROJECT_CONFIG
-    config_file_path.write_text(
-        "site_name: mkdocs-plugin-test\nrepo_name: github\nplugins:\n  - git-latest-changes"
-    )
-
-    docs_dir = repo_path_subdir / DOCS_DIR
-    docs_dir.mkdir(parents=True, exist_ok=True)
-
-    page_file_path = repo_path_subdir / DOCS_DIR / "index.md"
-    page_file_path.write_text("# Home")
-
-    # Yield the repository object to the tests
-    yield repo
-
-    # Clean up: Delete the temporary repository after the test
     repo.close()
     shutil.rmtree(repo_path)
 
@@ -308,38 +281,36 @@ plugins:
             contents,
         )
 
-def test_mkdocs_w_git_dir_in_parent_dir_config(project_w_subdir: Repo):
-        with working_directory(project_w_subdir.working_tree_dir):
-            # Simulate another subdir between working_tree_dir and DOCS_DIR
-            latest_changes_file_path = (
-                Path(project_w_subdir.working_tree_dir)
-                / 'subdir'
-                / DOCS_DIR
-                / f"{PAGE_W_LATEST_CHANGES_FILENAME}.md"
-            )
-            latest_changes_file_path.write_text("{{ latest_changes }}")
 
-            project_w_subdir.index.add([str(latest_changes_file_path)])
-            project_w_subdir.index.commit("Added latest changes page in subdir")
-            assert project_w_subdir.head.is_valid()
+@pytest.mark.parametrize("project", ["", "subdir", "subdir/subsubdir"], indirect=True)
+def test_mkdocs_w_git_dir_in_parent_dir_config(project):
+    repo = project
+    nested_path = repo.nested_path
 
-            assert run_build(project_w_subdir.working_tree_dir + '/subdir')
+    with working_directory(repo.working_tree_dir):
+        latest_changes_file_path = (
+            nested_path / DOCS_DIR / f"{PAGE_W_LATEST_CHANGES_FILENAME}.md"
+        )
+        latest_changes_file_path.write_text("{{ latest_changes }}")
 
-            latest_changes_page = (
-                Path(project_w_subdir.working_tree_dir)
-                / 'subdir'
-                / BUILD_DIR
-                / PAGE_W_LATEST_CHANGES_FILENAME
-                / "index.html"
-            )
-            assert latest_changes_page.exists(), "%s does not exist" % latest_changes_page
+        repo.index.add([str(latest_changes_file_path)])
+        relative_path = nested_path.relative_to(repo.working_tree_dir)
+        commit_message = (
+            f"Added latest changes page in {relative_path}"
+            if str(relative_path) != "."
+            else "Added latest changes page in root"
+        )
+        repo.index.commit(commit_message)
+        assert repo.head.is_valid()
 
-            contents = latest_changes_page.read_text()
-            # print(f"{contents=}")
+        assert run_build(str(nested_path))
 
-            # The marker `{{ latest_changes }}` should not exist in the generated page
-            assert not re.search("{{ latest_changes }}", contents)
+        latest_changes_page = (
+            nested_path / BUILD_DIR / PAGE_W_LATEST_CHANGES_FILENAME / "index.html"
+        )
+        assert latest_changes_page.exists(), f"{latest_changes_page} does not exist"
 
-            # The commit message should be displayed in the generated <table>
-            assert re.search(f"<td>Added latest changes page in subdir</td>", contents)
+        contents = latest_changes_page.read_text()
 
+        assert "{{ latest_changes }}" not in contents
+        assert commit_message in contents
