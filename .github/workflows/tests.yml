@@ -6,8 +6,6 @@ name: Run some tests and update github pages
 
 on:
   push:
-    branches:
-      - main
   pull_request:
   workflow_call:
 

@@ -5,7 +5,6 @@
 name: Deploy PyPI package
 
 on:
-  # push
   release:
     types: [published]
 
