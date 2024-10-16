@@ -217,7 +217,7 @@ def get_recent_changes(
     *, repo_url: str, repo_vendor: str, limit_to_docs_dir: str, history_limit: int
 ) -> str:
     try:
-        repo = Repo()
+        repo = Repo(search_parent_directories=True)
         branch = repo.active_branch
         git = repo.git
     except InvalidGitRepositoryError as invalid_repo_error:
