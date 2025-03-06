@@ -114,11 +114,11 @@ SPDX-License-Identifier: MIT
 <h2 id="configuration">Configuration</h2>
 <pre><code class="language-yml"># mkdocs.yml plugin configuration example
 plugins:
-    - git-latest-changes:
-        limit_to_docs_dir: True  # [True|False], defaults to False
-        repo_vendor: gitea       # [github|gitlab|gitea], defaults to `repo_name`
-        enabled_on_serve: True   # [True|False], defaults to True
-        history_limit: 5         # [Integer, defaults to -1 (no history limit)]
+  - git-latest-changes:
+      limit_to_docs_dir: True  # [True|False], defaults to False
+      repo_vendor: gitea       # [github|gitlab|gitea], defaults to `repo_name`
+      enabled_on_serve: True   # [True|False], defaults to True
+      history_limit: 5         # [Integer, defaults to -1 (no history limit)]
 </code></pre>
 <ul>
 <li>
@@ -150,13 +150,13 @@ plugins:
 <p>Use in a CI environment may require some tweaking and fixes situations where the git history is not available (e.g. <code>"HEAD is a detached symbolic reference as it points to &lt;commit hash&gt;</code>):</p>
 <pre><code class="language-yml"># GitLab / .gitlab-ci.yml
 job:
-    script:
-      # Returning to branch from detached HEAD
-      - git switch $CI_COMMIT_REF_NAME
-      - &lt;your CI script&gt;
-    variables:
-      GIT_DEPTH: 0         # [1]
-      GIT_STRATEGY: clone  # [2]
+  script:
+    # Returning to branch from detached HEAD
+    - git switch $CI_COMMIT_REF_NAME
+    - &lt;your CI script&gt;
+  variables:
+    GIT_DEPTH: 0         # [1]
+    GIT_STRATEGY: clone  # [2]
 </code></pre>
 <p><small markdown></p>
 <ul>
@@ -185,10 +185,10 @@ job:
 <tbody>
 <tr>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/docs/index.md">docs/index.md</a></td>
-<td>2025-03-06 23:57:53</td>
+<td>2025-03-07 00:01:15</td>
 <td>Thomas Breitner</td>
-<td>Fixed code blocks</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/07d2378a2f9f839e8114665f8346f7546aae778c">07d2378</a></td>
+<td>Fixed indentation in YAML code blocks</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/cf2c8d03d77701804ec177eac6d1a3370b65a3a7">cf2c8d0</a></td>
 </tr>
 <tr>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/mkdocs.yml">mkdocs.yml</a></td>
@@ -362,5 +362,5 @@ job:
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-03-06 22:58:27.168817+00:00
+Build Date UTC : 2025-03-06 23:01:52.557677+00:00
 -->
