@@ -58,16 +58,14 @@ MkDocs plugin that allows you to display a list of recently modified pages from 
 - Use in a CI environment may require some tweaking and fixes situations where the git history is not available (e.g. `"HEAD is a detached symbolic reference as it points to <commit hash>`):
     - GitLab `.gitlab-ci.yml`:
 
-        ```yml
-        job:
-          script:
-            # Returning to branch from detached HEAD
-            - git switch $CI_COMMIT_REF_NAME
-            - <your CI script>
-          variables:
-            GIT_DEPTH: 0  # [1]
-            GIT_STRATEGY: clone  # [2]
-        ```
+              job:
+                  script:
+                  # Returning to branch from detached HEAD
+                  - git switch $CI_COMMIT_REF_NAME
+                  - <your CI script>
+                  variables:
+                  GIT_DEPTH: 0  # [1]
+                  GIT_STRATEGY: clone  # [2]
 
         - [1] <https://docs.gitlab.com/ee/ci/runners/configure_runners.html#shallow-cloning>
         - [2] <https://docs.gitlab.com/ee/ci/runners/configure_runners.html#git-strategy>
