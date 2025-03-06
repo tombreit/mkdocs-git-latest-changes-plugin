@@ -52,7 +52,7 @@ MkDocs plugin that allows you to display a list of recently modified pages from 
 
 - This plugin depends of having any commits in the current git branch.
 - An error will be raised/rendered if no git repository exists.
-- For linked git commit hashes and filenames, the MkDocs config variable `repo_url` must be set and point to a Github or Gitlab repository.
+- For linked git commit hashes and filenames, the [MkDocs config variable `repo_url`](https://www.mkdocs.org/user-guide/configuration/#repo_url) must be set and point your repository.
 - Relax warnings with `--no-strict` (via MkDocs [strict configuration](https://www.mkdocs.org/user-guide/configuration/#strict), [cli](https://www.mkdocs.org/user-guide/cli/)), e.g. if a expected file is not in the git working tree.
 - Log level: Request debug information for this plugin via MkDocs `--verbose / -v` command line flag.
 - Use in a CI environment may require some tweaking and fixes situations where the git history is not available (e.g. `"HEAD is a detached symbolic reference as it points to <commit hash>`):
@@ -69,8 +69,8 @@ MkDocs plugin that allows you to display a list of recently modified pages from 
             GIT_STRATEGY: clone  # [2]
         ```
 
-        [1] <https://docs.gitlab.com/ee/ci/runners/configure_runners.html#shallow-cloning>
-        [2] <https://docs.gitlab.com/ee/ci/runners/configure_runners.html#git-strategy>
+        - [1] <https://docs.gitlab.com/ee/ci/runners/configure_runners.html#shallow-cloning>
+        - [2] <https://docs.gitlab.com/ee/ci/runners/configure_runners.html#git-strategy>
 
 ## Latest changes demo
 
