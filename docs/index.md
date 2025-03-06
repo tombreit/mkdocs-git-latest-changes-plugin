@@ -23,13 +23,13 @@ MkDocs plugin that allows you to display a list of recently modified pages from 
 ## Configuration
 
 ```yml
-    # mkdocs.yml plugin configuration example
-    plugins:
-      - git-latest-changes:
-          limit_to_docs_dir: True  # [True|False], defaults to False
-          repo_vendor: gitea  # [github|gitlab|gitea], defaults to `repo_name`
-          enabled_on_serve: True  # [True|False], defaults to True
-          history_limit: 5  # [Integer, defaults to -1 (no history limit)]
+# mkdocs.yml plugin configuration example
+plugins:
+    - git-latest-changes:
+        limit_to_docs_dir: True  # [True|False], defaults to False
+        repo_vendor: gitea       # [github|gitlab|gitea], defaults to `repo_name`
+        enabled_on_serve: True   # [True|False], defaults to True
+        history_limit: 5         # [Integer, defaults to -1 (no history limit)]
 ```
 
 - `repo_vendor`
@@ -55,20 +55,29 @@ MkDocs plugin that allows you to display a list of recently modified pages from 
 - For linked git commit hashes and filenames, the [MkDocs config variable `repo_url`](https://www.mkdocs.org/user-guide/configuration/#repo_url) must be set and point your repository.
 - Relax warnings with `--no-strict` (via MkDocs [strict configuration](https://www.mkdocs.org/user-guide/configuration/#strict), [cli](https://www.mkdocs.org/user-guide/cli/)), e.g. if a expected file is not in the git working tree.
 - Log level: Request debug information for this plugin via MkDocs `--verbose / -v` command line flag.
-- Use in a CI environment may require some tweaking and fixes situations where the git history is not available (e.g. `"HEAD is a detached symbolic reference as it points to <commit hash>`):
-    - GitLab `.gitlab-ci.yml`:
 
-              job:
-                  script:
-                  # Returning to branch from detached HEAD
-                  - git switch $CI_COMMIT_REF_NAME
-                  - <your CI script>
-                  variables:
-                  GIT_DEPTH: 0  # [1]
-                  GIT_STRATEGY: clone  # [2]
+## CI/CD
 
-        - [1] <https://docs.gitlab.com/ee/ci/runners/configure_runners.html#shallow-cloning>
-        - [2] <https://docs.gitlab.com/ee/ci/runners/configure_runners.html#git-strategy>
+Use in a CI environment may require some tweaking and fixes situations where the git history is not available (e.g. `"HEAD is a detached symbolic reference as it points to <commit hash>`):
+
+```yml
+# GitLab / .gitlab-ci.yml
+job:
+    script:
+      # Returning to branch from detached HEAD
+      - git switch $CI_COMMIT_REF_NAME
+      - <your CI script>
+    variables:
+      GIT_DEPTH: 0         # [1]
+      GIT_STRATEGY: clone  # [2]
+```
+
+<small markdown>
+
+- [1] <https://docs.gitlab.com/ee/ci/runners/configure_runners.html#shallow-cloning>
+- [2] <https://docs.gitlab.com/ee/ci/runners/configure_runners.html#git-strategy>
+
+</small>
 
 ## Latest changes demo
 
