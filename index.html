@@ -44,6 +44,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#hints">Hints</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#cicd">CI/CD</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#latest-changes-demo">Latest changes demo</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#code">Code</a>
@@ -110,13 +112,13 @@ SPDX-License-Identifier: MIT
 <li>Enjoy your latest changes table rendered by your MkDocs theme.</li>
 </ul>
 <h2 id="configuration">Configuration</h2>
-<pre><code class="language-yml">    # mkdocs.yml plugin configuration example
-    plugins:
-      - git-latest-changes:
-          limit_to_docs_dir: True  # [True|False], defaults to False
-          repo_vendor: gitea  # [github|gitlab|gitea], defaults to `repo_name`
-          enabled_on_serve: True  # [True|False], defaults to True
-          history_limit: 5  # [Integer, defaults to -1 (no history limit)]
+<pre><code class="language-yml"># mkdocs.yml plugin configuration example
+plugins:
+    - git-latest-changes:
+        limit_to_docs_dir: True  # [True|False], defaults to False
+        repo_vendor: gitea       # [github|gitlab|gitea], defaults to `repo_name`
+        enabled_on_serve: True   # [True|False], defaults to True
+        history_limit: 5         # [Integer, defaults to -1 (no history limit)]
 </code></pre>
 <ul>
 <li>
@@ -143,26 +145,25 @@ SPDX-License-Identifier: MIT
 <li>For linked git commit hashes and filenames, the <a href="https://www.mkdocs.org/user-guide/configuration/#repo_url">MkDocs config variable <code>repo_url</code></a> must be set and point your repository.</li>
 <li>Relax warnings with <code>--no-strict</code> (via MkDocs <a href="https://www.mkdocs.org/user-guide/configuration/#strict">strict configuration</a>, <a href="https://www.mkdocs.org/user-guide/cli/">cli</a>), e.g. if a expected file is not in the git working tree.</li>
 <li>Log level: Request debug information for this plugin via MkDocs <code>--verbose / -v</code> command line flag.</li>
-<li>Use in a CI environment may require some tweaking and fixes situations where the git history is not available (e.g. <code>"HEAD is a detached symbolic reference as it points to &lt;commit hash&gt;</code>):<ul>
-<li>
-<p>GitLab <code>.gitlab-ci.yml</code>:</p>
-<pre><code>  job:
-      script:
+</ul>
+<h2 id="cicd">CI/CD</h2>
+<p>Use in a CI environment may require some tweaking and fixes situations where the git history is not available (e.g. <code>"HEAD is a detached symbolic reference as it points to &lt;commit hash&gt;</code>):</p>
+<pre><code class="language-yml"># GitLab / .gitlab-ci.yml
+job:
+    script:
       # Returning to branch from detached HEAD
       - git switch $CI_COMMIT_REF_NAME
       - &lt;your CI script&gt;
-      variables:
-      GIT_DEPTH: 0  # [1]
+    variables:
+      GIT_DEPTH: 0         # [1]
       GIT_STRATEGY: clone  # [2]
 </code></pre>
+<p><small markdown></p>
 <ul>
 <li>[1] <a href="https://docs.gitlab.com/ee/ci/runners/configure_runners.html#shallow-cloning">https://docs.gitlab.com/ee/ci/runners/configure_runners.html#shallow-cloning</a></li>
 <li>[2] <a href="https://docs.gitlab.com/ee/ci/runners/configure_runners.html#git-strategy">https://docs.gitlab.com/ee/ci/runners/configure_runners.html#git-strategy</a></li>
 </ul>
-</li>
-</ul>
-</li>
-</ul>
+<p></small></p>
 <h2 id="latest-changes-demo">Latest changes demo</h2>
 <h3 id="code">Code</h3>
 <pre><code># docs_dir/file.md
@@ -184,10 +185,10 @@ SPDX-License-Identifier: MIT
 <tbody>
 <tr>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/docs/index.md">docs/index.md</a></td>
-<td>2025-03-06 23:21:26</td>
+<td>2025-03-06 23:57:53</td>
 <td>Thomas Breitner</td>
-<td>Fixed code block in list</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/9a6058ff5b43af3a16937525290942fadb1049f2">9a6058f</a></td>
+<td>Fixed code blocks</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/07d2378a2f9f839e8114665f8346f7546aae778c">07d2378</a></td>
 </tr>
 <tr>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/mkdocs.yml">mkdocs.yml</a></td>
@@ -361,5 +362,5 @@ SPDX-License-Identifier: MIT
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-03-06 22:22:00.041284+00:00
+Build Date UTC : 2025-03-06 22:58:11.477611+00:00
 -->
