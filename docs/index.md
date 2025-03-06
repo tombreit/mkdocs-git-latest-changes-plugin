@@ -25,11 +25,11 @@ MkDocs plugin that allows you to display a list of recently modified pages from 
 ```yml
 # mkdocs.yml plugin configuration example
 plugins:
-    - git-latest-changes:
-        limit_to_docs_dir: True  # [True|False], defaults to False
-        repo_vendor: gitea       # [github|gitlab|gitea], defaults to `repo_name`
-        enabled_on_serve: True   # [True|False], defaults to True
-        history_limit: 5         # [Integer, defaults to -1 (no history limit)]
+  - git-latest-changes:
+      limit_to_docs_dir: True  # [True|False], defaults to False
+      repo_vendor: gitea       # [github|gitlab|gitea], defaults to `repo_name`
+      enabled_on_serve: True   # [True|False], defaults to True
+      history_limit: 5         # [Integer, defaults to -1 (no history limit)]
 ```
 
 - `repo_vendor`
@@ -63,13 +63,13 @@ Use in a CI environment may require some tweaking and fixes situations where the
 ```yml
 # GitLab / .gitlab-ci.yml
 job:
-    script:
-      # Returning to branch from detached HEAD
-      - git switch $CI_COMMIT_REF_NAME
-      - <your CI script>
-    variables:
-      GIT_DEPTH: 0         # [1]
-      GIT_STRATEGY: clone  # [2]
+  script:
+    # Returning to branch from detached HEAD
+    - git switch $CI_COMMIT_REF_NAME
+    - <your CI script>
+  variables:
+    GIT_DEPTH: 0         # [1]
+    GIT_STRATEGY: clone  # [2]
 ```
 
 <small markdown>
