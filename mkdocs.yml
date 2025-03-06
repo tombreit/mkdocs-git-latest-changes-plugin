@@ -5,6 +5,7 @@
 site_name: mkdocs-git-latest-changes-plugin
 repo_url: https://github.com/tombreit/mkdocs-git-latest-changes-plugin
 strict: true
+theme: readthedocs
 plugins:
   - git-latest-changes:
       limit_to_docs_dir: False
