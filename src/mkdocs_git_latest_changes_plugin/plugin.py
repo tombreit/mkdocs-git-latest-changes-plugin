@@ -13,6 +13,7 @@ import html
 # import unicodedata
 from operator import itemgetter
 from dataclasses import dataclass
+from urllib.parse import urljoin
 
 from git import Repo
 from git.exc import GitCommandError, InvalidGitRepositoryError
@@ -25,7 +26,7 @@ from mkdocs.config.defaults import MkDocsConfig
 from mkdocs.config.base import Config
 from mkdocs.config import config_options
 
-from typing import Optional, Literal, Any
+from typing import Optional, Literal, Union, Any
 
 
 log = get_plugin_logger(__name__)
@@ -54,6 +55,8 @@ SUPPORTED_REMOTE_REPOS = {
     },
 }
 
+RENDERED_PAGE_TPL = "[{linktext}]({url})"
+
 
 @dataclass
 class RepoURLs:
@@ -66,6 +69,22 @@ def get_error_message(error: Exception) -> str:
     msg = template.format(type(error).__name__, error.args)
     return msg
 
+def get_rendered_path_url(
+    *,
+    filepath: str,
+    site_url: str,
+    file_mapping: Files
+) -> str:
+    # file_mapping contains paths relative to `docs/`
+    # accomodate by removing the prefix for searching
+    filepath_no_prefix = filepath.removeprefix("docs/")
+    file = next(iter(filter(lambda f: f.src_uri == filepath_no_prefix, file_mapping)))
+    url = urljoin(site_url, file.dest_uri)
+    # return markdown formatted link
+    return RENDERED_PAGE_TPL.format(
+        linktext=filepath,
+        url=url
+    )
 
 def get_remote_repo_urls(
     *,
@@ -214,7 +233,7 @@ def get_repo_vendor(url: str, repo_vendor_configured: str, repo_name: str) -> st
 
 
 def get_recent_changes(
-    *, repo_url: str, repo_vendor: str, limit_to_docs_dir: str, history_limit: int
+    *, repo_url: str, repo_vendor: str, limit_to_docs_dir: str, history_limit: int, site_url_path: str | None, file_mapping: Files
 ) -> str:
     try:
         repo = Repo(search_parent_directories=True)
@@ -282,7 +301,18 @@ def get_recent_changes(
             )
 
             # Dictionary insert order defines the result column order
-            fileinfo = {"Filepath": repo_urls.filepath_url}
+
+
+            filepath_url = repo_urls.filepath_url 
+            if site_url_path:
+                # Link to rendered page instead of git-repo-file
+                filepath_url = get_rendered_path_url(
+                    filepath=file,
+                    site_url=site_url_path,
+                    file_mapping=file_mapping
+                )
+
+            fileinfo = {"Filepath": filepath_url}
             fileinfo.update(loginfo)
             fileinfo.update({"Commit": repo_urls.commit_hash_url})
 
@@ -327,6 +357,7 @@ class GitLatestChangesPluginConfig(Config):
     repo_vendor = config_options.Type(str, default="")
     enabled_on_serve = config_options.Type(bool, default=True)
     history_limit = config_options.Type(int, default=-1)
+    link_to_generated_page = config_options.Type(bool, default=False)
 
 
 class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
@@ -351,6 +382,11 @@ class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
             log.info(
                 "Plugin deactivated during `serve`. Hint: config option `enabled_on_serve`"
             )
+        if self.config.link_to_generated_page and (not self.config.limit_to_docs_dir or not config.site_url):
+            raise PluginError(
+                "[git-latest-changes] option `link_to_generated_page` requires global `site_url` "
+                "and option `limit_to_docs_dir` to be set."
+            )
         return config
 
     def on_page_markdown(
@@ -366,6 +402,7 @@ class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
             # Make mypy happy
             # Argument "repo_url" to "get_recent_changes" has incompatible type
             # "str | None"; expected "str"  [arg-type]
+            site_url = str(config.site_url or "")
             repo_url = str(config.repo_url or "")
             repo_name = str(config.repo_name or "")
             repo_vendor_configured = self.config.repo_vendor
@@ -375,6 +412,10 @@ class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
                 log.debug(
                     f"Plugin config limit_to_docs_dir enabled: Only take files from {config.docs_dir} into account."
                 )
+            
+            site_url_path = (
+                site_url if self.config.link_to_generated_page else None
+            )
 
             limit_to_docs_dir = (
                 str(config.docs_dir) if self.config.limit_to_docs_dir else "."
@@ -385,8 +426,45 @@ class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
                 repo_vendor=repo_vendor,
                 limit_to_docs_dir=limit_to_docs_dir,
                 history_limit=self.config.history_limit,
+                site_url_path=site_url_path,
+                file_mapping=files
             )
 
             markdown = markdown.replace(marker, latest_changes)
 
         return markdown
+
+    def on_files(
+        self, files: Files, *, config: MkDocsConfig, **kwargs
+    ) -> Union[Files, None]:
+        """
+        Preprocess all files by filtering out generated files
+
+        Based on plugin [git-authors](https://github.com/timvink/mkdocs-git-authors-plugin/blob/master/src/mkdocs_git_authors_plugin/plugin.py#L88)
+
+        Args:
+            files: global files collection
+            config: global configuration object
+
+        Returns:
+            global files collection
+        """        
+        filtered = []
+        for file in files:
+            if hasattr(file, "generated_by") and file.generated_by:
+                log.debug(
+                    f"[git-latest-changes] The file {file.src_path} was generated by {file.generated_by}. "
+                    "Generated, dynamic files won't have git-metadata available."
+                )
+            elif not hasattr(file, 'src_dir') or file.src_dir is None:
+                log.debug(
+                    f"[git-latest-changes] Unable to find path for file {file.src_path}. "
+                    "Generated, dynamic files won't have git-metadata available."
+                )
+            elif file.abs_src_path:
+                filtered.append(file)
+            else:
+                log.warning(
+                    "[git-latest-changes] Unexpected behaviour. Unable to find path for {file.src_path}."
+                )
+        return Files(filtered)
