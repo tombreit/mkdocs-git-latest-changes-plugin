@@ -323,13 +323,13 @@ def test_mkdocs_w_git_dir_in_parent_dir_config(project):
             None,
             True,
             b"[git-latest-changes] option `link_to_generated_page` requires global `site_url`",
-            1
+            1,
         ),
         pytest.param(
             None,
             False,
             b"[git-latest-changes] option `link_to_generated_page` requires global `site_url`",
-            1
+            1,
         ),
         pytest.param(
             "https://example.com",
@@ -346,11 +346,11 @@ def test_mkdocs_w_git_dir_in_parent_dir_config(project):
     ],
 )
 def test_mkdocs_w_link_to_generated_page_verify_config(
-        project: Repo,
-        site_url: str | None,
-        limit_to_docs_dir: bool,
-        expected_err: bytes | None,
-        expected_code: int
+    project: Repo,
+    site_url: str | None,
+    limit_to_docs_dir: bool,
+    expected_err: bytes | None,
+    expected_code: int,
 ):
     with working_directory(project.working_tree_dir):
         config_file_path = Path(PRROJECT_CONFIG)
@@ -389,7 +389,7 @@ def test_mkdocs_w_link_to_generated_page_w_site_url_directory_urls(project: Repo
     with working_directory(project.working_tree_dir):
         config_file_path = Path(PRROJECT_CONFIG)
         config_file_path.write_text(
-            f"""
+            """
 site_name: mkdocs-plugin-test
 strict: true
 site_url: https://example.com
@@ -425,18 +425,19 @@ plugins:
         assert latest_changes_page.exists()
 
         contents = latest_changes_page.read_text()
-        
+
         # Verify that the link points to the generated HTML page and starts with site_url
         assert re.search(
             r'<a href="https://example\.com/latest-changes/index\.html">docs/latest-changes\.md</a>',
             contents,
         ), "Link was not rendered as expected"
 
+
 def test_mkdocs_w_link_to_generated_page_w_site_url(project: Repo):
     with working_directory(project.working_tree_dir):
         config_file_path = Path(PRROJECT_CONFIG)
         config_file_path.write_text(
-            f"""
+            """
 site_name: mkdocs-plugin-test
 strict: true
 site_url: https://example.com
@@ -471,7 +472,7 @@ plugins:
         assert latest_changes_page.exists()
 
         contents = latest_changes_page.read_text()
-        
+
         # Verify that the link points to the generated HTML page and starts with site_url
         assert re.search(
             r'<a href="https://example\.com/latest-changes\.html">docs/latest-changes\.md</a>',
