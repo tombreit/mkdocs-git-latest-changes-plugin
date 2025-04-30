@@ -131,10 +131,11 @@ def get_remote_repo_urls(
             repo_url=repo_url,
             branch=branch,
         )
-        repo_urls.rendered_page_url = RENDERED_PAGE_TPL.format(
-            linktext=filepath,
-            url=page.abs_url,
-        )
+    # This can be updated in any case, even when no repo_{vendor,url} is available
+    repo_urls.rendered_page_url = RENDERED_PAGE_TPL.format(
+        linktext=filepath,
+        url=page.abs_url,
+    )
 
     return repo_urls
 

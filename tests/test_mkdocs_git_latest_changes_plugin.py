@@ -422,7 +422,6 @@ def test_mkdocs_w_link_to_generated_page_w_site_url(project: Repo, site_url: str
             f"""
 site_name: mkdocs-plugin-test
 strict: true
-repo_url: https://github.com/user/my-mkdocs
 site_url: {site_url}
 use_directory_urls: {use_directory_urls}
 plugins:
