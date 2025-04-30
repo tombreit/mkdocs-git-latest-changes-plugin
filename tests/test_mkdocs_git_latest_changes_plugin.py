@@ -412,10 +412,11 @@ plugins:
             r'<a href="/subdir/latest-changes/">docs/latest-changes\.md</a>',
             id="subdir_use_dir_urls",
         ),
-
     ],
 )
-def test_mkdocs_w_link_to_generated_page_w_site_url(project: Repo, site_url: str, use_directory_urls: bool, regex_pattern: str):
+def test_mkdocs_w_link_to_generated_page_w_site_url(
+    project: Repo, site_url: str, use_directory_urls: bool, regex_pattern: str
+):
     with working_directory(project.working_tree_dir):
         config_file_path = Path(PRROJECT_CONFIG)
         config_file_path.write_text(

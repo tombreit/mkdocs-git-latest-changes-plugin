@@ -13,7 +13,6 @@ import html
 # import unicodedata
 from operator import itemgetter
 from dataclasses import dataclass
-from urllib.parse import urljoin
 
 from git import Repo
 from git.exc import GitCommandError, InvalidGitRepositoryError
@@ -111,7 +110,11 @@ def get_remote_repo_urls(
 
     # Initialize result dataclass with plain commit_hash and filepath,
     # not formatted as markdown links
-    repo_urls = RepoURLs(commit_hash_url=commit_hash_short, filepath_url=filepath, rendered_page_url=page.abs_url)
+    repo_urls = RepoURLs(
+        commit_hash_url=commit_hash_short,
+        filepath_url=filepath,
+        rendered_page_url=page.abs_url,
+    )
 
     if all([repo_url, repo_vendor]):
         # Update dataclass with markdown links
