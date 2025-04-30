@@ -385,15 +385,46 @@ plugins:
             assert expected_err in result.stderr
 
 
-def test_mkdocs_w_link_to_generated_page_w_site_url_directory_urls(project: Repo):
+@pytest.mark.parametrize(
+    "site_url,use_directory_urls,regex_pattern",
+    [
+        pytest.param(
+            "http://example.com",
+            False,
+            r'<a href="/latest-changes\.html">docs/latest-changes\.md</a>',
+            id="normal",
+        ),
+        pytest.param(
+            "http://example.com",
+            True,
+            r'<a href="/latest-changes/">docs/latest-changes\.md</a>',
+            id="use_dir_urls",
+        ),
+        pytest.param(
+            "http://example.com/subdir",
+            False,
+            r'<a href="/subdir/latest-changes\.html">docs/latest-changes\.md</a>',
+            id="subdir",
+        ),
+        pytest.param(
+            "http://example.com/subdir",
+            True,
+            r'<a href="/subdir/latest-changes/">docs/latest-changes\.md</a>',
+            id="subdir_use_dir_urls",
+        ),
+
+    ],
+)
+def test_mkdocs_w_link_to_generated_page_w_site_url(project: Repo, site_url: str, use_directory_urls: bool, regex_pattern: str):
     with working_directory(project.working_tree_dir):
         config_file_path = Path(PRROJECT_CONFIG)
         config_file_path.write_text(
-            """
+            f"""
 site_name: mkdocs-plugin-test
 strict: true
-site_url: https://example.com
-use_directory_urls: True
+repo_url: https://github.com/user/my-mkdocs
+site_url: {site_url}
+use_directory_urls: {use_directory_urls}
 plugins:
   - git-latest-changes:
       link_to_generated_page: True
@@ -414,67 +445,19 @@ plugins:
         project.index.add([str(latest_changes_file_path)])
         project.index.commit("Added latest changes page")
 
-        assert run_build(project.working_tree_dir)
+        result = run_build(project.working_tree_dir)
+        assert result.returncode == 0
 
         latest_changes_page = (
             Path(project.working_tree_dir)
             / BUILD_DIR
-            / PAGE_W_LATEST_CHANGES_FILENAME
-            / "index.html"
+            / f"{PAGE_W_LATEST_CHANGES_FILENAME}{"/index.html" if use_directory_urls else ".html"}"
         )
         assert latest_changes_page.exists()
 
         contents = latest_changes_page.read_text()
-
         # Verify that the link points to the generated HTML page and starts with site_url
         assert re.search(
-            r'<a href="https://example\.com/latest-changes/index\.html">docs/latest-changes\.md</a>',
-            contents,
-        ), "Link was not rendered as expected"
-
-
-def test_mkdocs_w_link_to_generated_page_w_site_url(project: Repo):
-    with working_directory(project.working_tree_dir):
-        config_file_path = Path(PRROJECT_CONFIG)
-        config_file_path.write_text(
-            """
-site_name: mkdocs-plugin-test
-strict: true
-site_url: https://example.com
-use_directory_urls: False
-plugins:
-  - git-latest-changes:
-      link_to_generated_page: True
-      limit_to_docs_dir: True
-        """
-        )
-
-        project.index.add([str(config_file_path)])
-        project.index.commit("Set plugin config to link to generated pages")
-
-        latest_changes_file_path = (
-            Path(project.working_tree_dir)
-            / DOCS_DIR
-            / f"{PAGE_W_LATEST_CHANGES_FILENAME}.md"
-        )
-        latest_changes_file_path.write_text("{{ latest_changes }}")
-
-        project.index.add([str(latest_changes_file_path)])
-        project.index.commit("Added latest changes page")
-
-        assert run_build(project.working_tree_dir)
-
-        latest_changes_page = (
-            Path(project.working_tree_dir)
-            / BUILD_DIR
-            / f"{PAGE_W_LATEST_CHANGES_FILENAME}.html"
-        )
-        assert latest_changes_page.exists()
-
-        contents = latest_changes_page.read_text()
-
-        # Verify that the link points to the generated HTML page and starts with site_url
-        assert re.search(
-            r'<a href="https://example\.com/latest-changes\.html">docs/latest-changes\.md</a>',
+            regex_pattern,
             contents,
         ), "Link was not rendered as expected"

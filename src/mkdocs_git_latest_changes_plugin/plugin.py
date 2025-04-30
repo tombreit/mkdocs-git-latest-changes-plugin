@@ -62,22 +62,13 @@ RENDERED_PAGE_TPL = "[{linktext}]({url})"
 class RepoURLs:
     commit_hash_url: str
     filepath_url: str
+    rendered_page_url: str
 
 
 def get_error_message(error: Exception) -> str:
     template = "An exception of type {0} occurred. Arguments:\n{1!r}"
     msg = template.format(type(error).__name__, error.args)
     return msg
-
-
-def get_rendered_path_url(*, filepath: str, site_url: str, file_mapping: Files) -> str:
-    # file_mapping contains paths relative to `docs/`
-    # accomodate by removing the prefix for searching
-    filepath_no_prefix = filepath.removeprefix("docs/")
-    file = next(iter(filter(lambda f: f.src_uri == filepath_no_prefix, file_mapping)))
-    url = urljoin(site_url, file.dest_uri)
-    # return markdown formatted link
-    return RENDERED_PAGE_TPL.format(linktext=filepath, url=url)
 
 
 def get_remote_repo_urls(
@@ -88,10 +79,14 @@ def get_remote_repo_urls(
     commit_hash: str,
     commit_hash_short: str,
     filepath: str,
+    page: Page,
 ) -> RepoURLs:
     """
     Build URLs for a given git hash, file and a repository as a markdown link. Currently only
     for Github, Gitlab and Gitea.
+
+    Generic:
+    rendered_page_url: <site url>/<filepath html>
 
     Github:
     repo_url:   https://<repo_url>/<ns>/<project>
@@ -116,7 +111,7 @@ def get_remote_repo_urls(
 
     # Initialize result dataclass with plain commit_hash and filepath,
     # not formatted as markdown links
-    repo_urls = RepoURLs(commit_hash_url=commit_hash_short, filepath_url=filepath)
+    repo_urls = RepoURLs(commit_hash_url=commit_hash_short, filepath_url=filepath, rendered_page_url=page.abs_url)
 
     if all([repo_url, repo_vendor]):
         # Update dataclass with markdown links
@@ -135,6 +130,10 @@ def get_remote_repo_urls(
             filepath=filepath,
             repo_url=repo_url,
             branch=branch,
+        )
+        repo_urls.rendered_page_url = RENDERED_PAGE_TPL.format(
+            linktext=filepath,
+            url=page.abs_url,
         )
 
     return repo_urls
@@ -232,8 +231,8 @@ def get_recent_changes(
     repo_vendor: str,
     limit_to_docs_dir: str,
     history_limit: int,
-    site_url_path: str | None,
-    file_mapping: Files,
+    link_to_rendered_page: bool,
+    page: Page,
 ) -> str:
     try:
         repo = Repo(search_parent_directories=True)
@@ -298,17 +297,17 @@ def get_recent_changes(
                 commit_hash=loginfo["hash_full"],
                 commit_hash_short=loginfo["hash_short"],
                 filepath=file,
+                page=page,
             )
 
+            if link_to_rendered_page:
+                # Link to rendered HTML page
+                filepath_url = repo_urls.rendered_page_url
+            else:
+                # Link to git-webinterface file view
+                filepath_url = repo_urls.filepath_url
+
             # Dictionary insert order defines the result column order
-
-            filepath_url = repo_urls.filepath_url
-            if site_url_path:
-                # Link to rendered page instead of git-repo-file
-                filepath_url = get_rendered_path_url(
-                    filepath=file, site_url=site_url_path, file_mapping=file_mapping
-                )
-
             fileinfo = {"Filepath": filepath_url}
             fileinfo.update(loginfo)
             fileinfo.update({"Commit": repo_urls.commit_hash_url})
@@ -401,7 +400,6 @@ class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
             # Make mypy happy
             # Argument "repo_url" to "get_recent_changes" has incompatible type
             # "str | None"; expected "str"  [arg-type]
-            site_url = str(config.site_url or "")
             repo_url = str(config.repo_url or "")
             repo_name = str(config.repo_name or "")
             repo_vendor_configured = self.config.repo_vendor
@@ -412,8 +410,6 @@ class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
                     f"Plugin config limit_to_docs_dir enabled: Only take files from {config.docs_dir} into account."
                 )
 
-            site_url_path = site_url if self.config.link_to_generated_page else None
-
             limit_to_docs_dir = (
                 str(config.docs_dir) if self.config.limit_to_docs_dir else "."
             )
@@ -423,8 +419,8 @@ class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
                 repo_vendor=repo_vendor,
                 limit_to_docs_dir=limit_to_docs_dir,
                 history_limit=self.config.history_limit,
-                site_url_path=site_url_path,
-                file_mapping=files,
+                link_to_rendered_page=self.config.link_to_generated_page,
+                page=page,
             )
 
             markdown = markdown.replace(marker, latest_changes)
