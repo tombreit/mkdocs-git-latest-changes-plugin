@@ -26,10 +26,11 @@ MkDocs plugin that allows you to display a list of recently modified pages from 
 # mkdocs.yml plugin configuration example
 plugins:
   - git-latest-changes:
-      limit_to_docs_dir: True  # [True|False], defaults to False
-      repo_vendor: gitea       # [github|gitlab|gitea], defaults to `repo_name`
-      enabled_on_serve: True   # [True|False], defaults to True
-      history_limit: 5         # [Integer, defaults to -1 (no history limit)]
+      limit_to_docs_dir: True       # [True|False], defaults to False
+      repo_vendor: gitea            # [github|gitlab|gitea], defaults to `repo_name`
+      enabled_on_serve: True        # [True|False], defaults to True
+      history_limit: 5              # [Integer, defaults to -1 (no history limit)]
+      link_to_generated_page: False # [True|False], defaults to False
 ```
 
 - `repo_vendor`
@@ -48,11 +49,16 @@ plugins:
 
     Not interested in all the old commits? Limit the table of recent changes using `history_limit = N`. `N` should be a positive integer, negative values or zero disables this option.
 
+- `link_to_generated_page`
+
+    Want to link to the generated page instead of the file in the git-webinterface? Set this option. The commit-hash link will still point to the respective diff in the git-webinterface. See hints below.
+
 ## Hints
 
 - This plugin depends of having any commits in the current git branch.
 - An error will be raised/rendered if no git repository exists.
 - For linked git commit hashes and filenames, the [MkDocs config variable `repo_url`](https://www.mkdocs.org/user-guide/configuration/#repo_url) must be set and point your repository.
+- For linking to generated pages the [Mkdocs config variable `site_url`](https://www.mkdocs.org/user-guide/configuration/#site_url) and config option `limit_to_docs_dir: True` must be both set.
 - Relax warnings with `--no-strict` (via MkDocs [strict configuration](https://www.mkdocs.org/user-guide/configuration/#strict), [cli](https://www.mkdocs.org/user-guide/cli/)), e.g. if a expected file is not in the git working tree.
 - Log level: Request debug information for this plugin via MkDocs `--verbose / -v` command line flag.
 
