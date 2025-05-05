@@ -202,7 +202,6 @@ def test_commit_message_conversion(project: Repo, msg: str, msg_rendered: str) -
         assert latest_changes_page.exists(), "%s does not exist" % latest_changes_page
 
         contents = latest_changes_page.read_text()
-        # print(f"{contents=}")
 
         # The marker `{{ latest_changes }}` should not exist in the generated page
         assert not re.search("{{ latest_changes }}", contents)

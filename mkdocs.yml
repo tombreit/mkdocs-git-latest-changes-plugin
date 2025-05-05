@@ -8,7 +8,13 @@ strict: true
 theme: readthedocs
 plugins:
   - git-latest-changes:
-      limit_to_docs_dir: False
+      limit_to_docs_dir: True
       repo_vendor: github
       enabled_on_serve: True
       history_limit: -1
+      timestamp_format: "%Y"
+      changelog_features:
+        - "timestamp"
+        - "page_link_rendered"
+        - "author"
+        - "message"
