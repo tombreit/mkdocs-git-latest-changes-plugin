@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 
+from datetime import datetime
 from dataclasses import dataclass
 
 from .helpers import get_rel_path
@@ -51,7 +52,7 @@ class Loginfo:
     """
 
     filepath: str
-    timestamp: str
+    timestamp: datetime
     author: str
     message: str
     hash_short: str

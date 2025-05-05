@@ -14,7 +14,9 @@ template_dir = Path(__file__).parent / "templates"
 env = Environment(loader=FileSystemLoader(template_dir))
 
 
-def render_table_jinja(loginfos: List[Loginfo], changelog_features: List[str]) -> str:
+def render_table(
+    *, loginfos: List[Loginfo], changelog_features: List[str], timestamp_format: str
+) -> str:
     """
     Render markdown table using external Jinja2 template with configurable columns
 
@@ -26,7 +28,7 @@ def render_table_jinja(loginfos: List[Loginfo], changelog_features: List[str]) -
         return "No recent changes found."
 
     # Mapping of feature IDs to human-readable column headers
-    feature_headers = {
+    column_headers = {
         "filepath": "File",
         "timestamp": "Date",
         "commit_hash_link": "Commit",
@@ -36,9 +38,14 @@ def render_table_jinja(loginfos: List[Loginfo], changelog_features: List[str]) -
         "page_link_rendered": "Page",
     }
 
+    context = {
+        "loginfos": loginfos,
+        "features": changelog_features,
+        "timestamp_format": timestamp_format,
+        "column_headers": column_headers,
+    }
+
     template = env.get_template("recent_changes_table.md.j2")
-    table_rendered: str = template.render(
-        loginfos=loginfos, features=changelog_features, feature_headers=feature_headers
-    ).strip()
+    table_rendered: str = template.render(context).strip()
 
     return table_rendered

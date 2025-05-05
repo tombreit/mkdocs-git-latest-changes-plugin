@@ -19,7 +19,7 @@ from mkdocs.exceptions import PluginError
 
 from .helpers import validate_timestamp_format
 from .git_adapter import get_recent_changes
-from .presentation import render_table_jinja
+from .presentation import render_table
 
 log = get_plugin_logger(__name__)
 
@@ -125,12 +125,13 @@ class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
                 history_limit=self.config.history_limit,
                 limit_to_docs_dir=self.config.tracked_dir,
                 latest_changes_page_path=page.file.abs_src_path or "",
-                timestamp_format=self.config.timestamp_format,
             )
 
             # 3. Render the recent changes as markdown table
-            recent_changes_markdown_table = render_table_jinja(
-                git_loginfos, self.config.changelog_features
+            recent_changes_markdown_table = render_table(
+                loginfos=git_loginfos,
+                changelog_features=self.config.changelog_features,
+                timestamp_format=self.config.timestamp_format,
             )
             print(f"{recent_changes_markdown_table=}")
 

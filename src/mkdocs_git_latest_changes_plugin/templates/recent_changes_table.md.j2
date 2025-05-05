@@ -5,12 +5,12 @@ SPDX-License-Identifier: MIT
 #}
 
 {# Generate header row based on configured features #}
-| {% for feature in features %}{{ feature_headers.get(feature, feature) }}{% if not loop.last %} | {% endif %}{% endfor %} |
-| {% for feature in features %}{{ "-" * (feature_headers.get(feature, feature)|length) }}{% if not loop.last %} | {% endif %}{% endfor %} |
+| {% for feature in features %}{{ column_headers.get(feature, feature) }}{% if not loop.last %} | {% endif %}{% endfor %} |
+| {% for feature in features %}{{ "-" * (column_headers.get(feature, feature)|length) }}{% if not loop.last %} | {% endif %}{% endfor %} |
 {% for info in loginfos %}| {% for feature in features %}
 
 {%- if feature == "timestamp" -%}
-{{ info.timestamp }}
+{{ info.timestamp.strftime(timestamp_format) }}
 
 {%- elif feature == "author" -%}
 {{- info.author -}}

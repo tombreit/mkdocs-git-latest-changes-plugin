@@ -2,7 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
-from operator import attrgetter  # Add attrgetter import
+from datetime import datetime
+from operator import attrgetter
 
 from mkdocs.plugins import get_plugin_logger
 from mkdocs.exceptions import PluginError
@@ -68,23 +69,10 @@ def get_recent_changes(
     history_limit: int,
     limit_to_docs_dir: str,
     latest_changes_page_path: str,
-    timestamp_format: str,
 ) -> tuple[list["Loginfo"], str]:
     # Custom separator character for git log output
     SEP_HEX = "%x00"
     SEP_UNICODE = "\000"
-
-    # git log placeholders:
-    # https://git-scm.com/docs/pretty-formats
-    # The sequence must map to the list index in the loginfo dict
-    # [0]: %cd : commiter date
-    # [1]: %h  : abbreviated commit hash
-    # [2]: %H  : full commit hash
-    # [3]: %an : author name
-    # [4]: %s  : subject
-    git_log_format = f"%cd{SEP_HEX}%h{SEP_HEX}%H{SEP_HEX}%an{SEP_HEX}%s"
-
-    git_log_date_format = timestamp_format or "%Y-%m-%d %H:%M:%S"
 
     try:
         repo = Repo(search_parent_directories=True)
@@ -108,6 +96,17 @@ def get_recent_changes(
         files = files.split("\n")
 
     log.info(f"{len(files)} files found in git index and working tree.")
+
+    # git log placeholders:
+    # https://git-scm.com/docs/pretty-formats
+    # The sequence must map to the list index in the loginfo dict
+    # [0]: %cd : commiter date
+    # [1]: %h  : abbreviated commit hash
+    # [2]: %H  : full commit hash
+    # [3]: %an : author name
+    # [4]: %s  : subject
+    git_log_format = f"%cd{SEP_HEX}%h{SEP_HEX}%H{SEP_HEX}%an{SEP_HEX}%s"
+
     loginfos = []
     for file in files:
         log.debug(f"Processing file `{file}`...")
@@ -117,7 +116,7 @@ def get_recent_changes(
                 # Limit the number of commits to output; short form would be "-1"
                 "--max-count=1",
                 f"--pretty=format:{git_log_format}",
-                f"--date=format:{git_log_date_format}",
+                "--date=iso8601-strict-local",
                 file,
             )
 
@@ -125,9 +124,11 @@ def get_recent_changes(
                 sanitize_string(loginfo) for loginfo in loginfo_raw.split(SEP_UNICODE)
             ]
 
+            timestamp_obj = datetime.fromisoformat(loginfo_safe[0])
+
             loginfo = Loginfo(
                 filepath=file,
-                timestamp=loginfo_safe[0],
+                timestamp=timestamp_obj,
                 hash_short=loginfo_safe[1],
                 hash_full=loginfo_safe[2],
                 author=loginfo_safe[3],
@@ -156,6 +157,7 @@ def get_recent_changes(
     loginfos = sorted(loginfos, key=attrgetter("timestamp"), reverse=True)
 
     # Only use this loginfo object if not excluded via history_limit
+    # TODO: do not event create this loginfo object if not needed
     history_limit = history_limit if history_limit > 0 else False
     log.debug(f"history_limit set: {history_limit}.")
 
