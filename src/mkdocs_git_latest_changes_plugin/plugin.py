@@ -37,7 +37,7 @@ class GitLatestChangesPluginConfig(Config):
 
     # Display options
     # If adding new features: update template and feature_headers
-    changelog_features = config_options.Type(
+    table_features = config_options.Type(
         list,
         # The default should match the behavior of previous versions of this plugin
         default=[
@@ -72,6 +72,33 @@ class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
         if not self.config.enabled_on_serve and self.is_serve:
             log.info(
                 "Plugin deactivated during `serve`. Hint: config option `enabled_on_serve`"
+            )
+
+        valid_table_features = {
+            "filepath",
+            "page_link_git_repo",
+            "page_link_rendered",
+            "timestamp",
+            "author",
+            "message",
+            "commit_hash_link",
+        }
+
+        invalid_table_features = [
+            feature
+            for feature in self.config.table_features
+            if feature not in valid_table_features
+        ]
+
+        if invalid_table_features:
+            valid_features_str = ", ".join(
+                f'"{f}"' for f in sorted(valid_table_features)
+            )
+            invalid_features_str = ", ".join(f'"{f}"' for f in invalid_table_features)
+
+            raise PluginError(
+                f"Invalid table_features: {invalid_features_str}\n"
+                f"Valid options are: {valid_features_str}"
             )
 
         try:
@@ -130,7 +157,7 @@ class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
             # 3. Render the recent changes as markdown table
             recent_changes_markdown_table = render_table(
                 loginfos=git_loginfos,
-                changelog_features=self.config.changelog_features,
+                table_features=self.config.table_features,
                 timestamp_format=self.config.timestamp_format,
             )
             print(f"{recent_changes_markdown_table=}")

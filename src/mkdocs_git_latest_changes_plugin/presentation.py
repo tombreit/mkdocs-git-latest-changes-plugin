@@ -15,14 +15,14 @@ env = Environment(loader=FileSystemLoader(template_dir))
 
 
 def render_table(
-    *, loginfos: List[Loginfo], changelog_features: List[str], timestamp_format: str
+    *, loginfos: List[Loginfo], table_features: List[str], timestamp_format: str
 ) -> str:
     """
     Render markdown table using external Jinja2 template with configurable columns
 
     Args:
         loginfos: List of Loginfo objects containing change data
-        changelog_features: List of column identifiers controlling table structure
+        table_features: List of column identifiers controlling table structure
     """
     if not loginfos:
         return "No recent changes found."
@@ -40,7 +40,7 @@ def render_table(
 
     context = {
         "loginfos": loginfos,
-        "features": changelog_features,
+        "features": table_features,
         "timestamp_format": timestamp_format,
         "column_headers": column_headers,
     }
