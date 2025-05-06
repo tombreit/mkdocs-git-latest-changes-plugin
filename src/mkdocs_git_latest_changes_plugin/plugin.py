@@ -160,7 +160,6 @@ class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
                 table_features=self.config.table_features,
                 timestamp_format=self.config.timestamp_format,
             )
-            print(f"{recent_changes_markdown_table=}")
 
             # 4. Append the history limit hint to the markdown table
             if history_limit_hint:

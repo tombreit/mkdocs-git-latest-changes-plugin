@@ -50,7 +50,6 @@ def get_rel_path(*, src_path: str, dest_path: str) -> str:
     except ValueError:
         pass
 
-    print(f"{dest_path_path} -> {src_path_dir} -> {rendered_url}")
     return rendered_url
 
 

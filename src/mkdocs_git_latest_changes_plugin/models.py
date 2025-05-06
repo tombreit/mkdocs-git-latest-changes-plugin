@@ -63,7 +63,6 @@ class Loginfo:
     branch: str
 
     def _get_remote_url(self, url_type: str) -> str:
-        # Get templates for this repo vendor
         templates = SUPPORTED_REMOTE_REPOS.get(self.repo_vendor, {})
         url_template = templates.get(url_type, "")
 
@@ -90,5 +89,4 @@ class Loginfo:
         rel_path = get_rel_path(
             src_path=self.latest_changes_page_path, dest_path=self.filepath
         )
-        print(f"{rel_path=}")
         return rel_path
