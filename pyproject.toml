@@ -29,6 +29,7 @@ classifiers = [
 dependencies = [
     "mkdocs>=1.5",
     "GitPython>=3.1.43",
+    "Jinja2 >=2.11.1",  # Already a dependency of MkDocs, but we'll be explicit
 ]
 
 [project.optional-dependencies]
