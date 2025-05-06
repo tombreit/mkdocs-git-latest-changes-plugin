@@ -25,7 +25,11 @@ SPDX-License-Identifier: MIT
 [{{ info.filepath }}]({{ info.get_file_remote_url }})
 
 {%- elif feature == "page_link_rendered" -%}
-[{{ info.filepath }}]({{ info.get_file_local_url }})
+{%- if info.get_file_local_url -%}
+    [{{ info.filepath }}]({{ info.get_file_local_url }})
+{%- else -%}
+    {{ info.filepath }}
+{%- endif -%}
 
 {%- else -%}
 {{ info[feature] }}
