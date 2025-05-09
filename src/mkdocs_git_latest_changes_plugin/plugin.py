@@ -30,10 +30,7 @@ class GitLatestChangesPluginConfig(Config):
     repo_vendor = config_options.Type(str, default="")
     enabled_on_serve = config_options.Type(bool, default=True)
     history_limit = config_options.Type(int, default=-1)
-    timestamp_format = config_options.Type(str, default="%Y-%m-%d %H:%M")
-
-    # Calcuated attribute, not to be set by user
-    tracked_dir: str = "."
+    timestamp_format = config_options.Type(str, default="%Y-%m-%d %H:%M:%S")
 
     # Display options
     # If adding new features: update template and feature_headers
@@ -41,14 +38,16 @@ class GitLatestChangesPluginConfig(Config):
         list,
         # The default should match the behavior of previous versions of this plugin
         default=[
-            "page_link_git_repo",
-            "page_link_rendered",
+            "file_link_git_repo",
             "timestamp",
             "author",
             "message",
             "commit_hash_link",
         ],
     )
+
+    # Calcuated attribute, not to be set by user
+    tracked_dir: str = "."
 
 
 class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
@@ -76,8 +75,8 @@ class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
 
         valid_table_features = {
             "filepath",
-            "page_link_git_repo",
-            "page_link_rendered",
+            "file_link_git_repo",
+            "page_path_link",
             "timestamp",
             "author",
             "message",

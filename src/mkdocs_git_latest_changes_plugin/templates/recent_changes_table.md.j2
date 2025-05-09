@@ -21,12 +21,12 @@ SPDX-License-Identifier: MIT
 {%- elif feature == "commit_hash_link" -%}
 [{{ info.hash_short }}]({{ info.get_hash_url }})
 
-{%- elif feature == "page_link_git_repo" -%}
+{%- elif feature == "file_link_git_repo" -%}
 [{{ info.filepath }}]({{ info.get_file_remote_url }})
 
-{%- elif feature == "page_link_rendered" -%}
+{%- elif feature == "page_path_link" -%}
 {%- if info.get_file_local_url -%}
-    [{{ info.filepath }}]({{ info.get_file_local_url }})
+    [{{- info.filepath -}}]({{ info.get_file_local_url }})
 {%- else -%}
     {{ info.filepath }}
 {%- endif -%}

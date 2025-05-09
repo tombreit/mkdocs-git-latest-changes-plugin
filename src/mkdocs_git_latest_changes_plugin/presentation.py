@@ -34,8 +34,8 @@ def render_table(
         "commit_hash_link": "Commit",
         "author": "Author",
         "message": "Description",
-        "page_link_git_repo": "File (Git)",
-        "page_link_rendered": "Page",
+        "file_link_git_repo": "File (Git)",
+        "page_path_link": "Page",
     }
 
     context = {
