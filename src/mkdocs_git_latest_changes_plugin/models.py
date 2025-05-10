@@ -66,12 +66,15 @@ class Loginfo:
         templates = SUPPORTED_REMOTE_REPOS.get(self.repo_vendor, {})
         url_template = templates.get(url_type, "")
 
-        return url_template.format(
-            filepath=self.filepath,
-            repo_url=self.repo_url,
-            commit_hash=self.hash_full,
-            branch=self.branch,
-        )
+        if self.repo_url:
+            return url_template.format(
+                filepath=self.filepath,
+                repo_url=self.repo_url,
+                commit_hash=self.hash_full,
+                branch=self.branch,
+            )
+
+        return ""
 
     @property
     def get_hash_url(self) -> str:

@@ -18,7 +18,7 @@ from mkdocs.config import config_options
 from mkdocs.exceptions import PluginError
 
 from .helpers import validate_timestamp_format
-from .git_adapter import get_recent_changes
+from .git_adapter import get_recent_changes, get_repo_vendor
 from .presentation import render_table
 
 log = get_plugin_logger(__name__)
@@ -105,11 +105,11 @@ class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
         except ValueError as e:
             raise PluginError(f"Invalid timestamp_format: {e}") from e
 
-        # self.config.repo_vendor = get_repo_vendor(
-        #     repo_url=config.repo_url,
-        #     repo_name=config.repo_name,
-        #     repo_vendor_configured=self.config.repo_vendor,
-        # )
+        self.config.repo_vendor = get_repo_vendor(
+            repo_url=config.repo_url or "",
+            repo_name=config.repo_name or "",
+            repo_vendor=self.config.repo_vendor,
+        )
 
         tracked_dir = self.config.tracked_dir
         if self.config.limit_to_docs_dir:

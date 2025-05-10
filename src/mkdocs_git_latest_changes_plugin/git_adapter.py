@@ -12,54 +12,61 @@ from git import Repo
 from git.exc import GitCommandError, InvalidGitRepositoryError
 
 from .helpers import get_error_message, sanitize_string
-from .models import Loginfo  # SUPPORTED_REMOTE_REPOS
+from .models import Loginfo, SUPPORTED_REMOTE_REPOS
 
 log = get_plugin_logger(__name__)
 
 
-# def get_repo_vendor(
-#     *, repo_url: str | None, repo_name: str | None, repo_vendor_configured: str
-# ) -> str:
-#     """
-#     Figure out the repo_vendor (eg. bitbucket, github, gitlab, gitea)
-#     """
-#     repo_vendor = ""
+def get_repo_vendor(*, repo_url: str, repo_name: str, repo_vendor: str) -> str:
+    """
+    Figure out the repo_vendor (eg. bitbucket, github, gitlab, gitea)
+    As MkDocs `repo_name` attribute serves a slightly different purpose,
+    this plugin exposes a separate config option.
+    """
+    usable_repo_vendor = ""
 
-#     if not repo_url:
-#         log.info(
-#             "No repo_url given. Commit hashes and filepaths will not be linkified."
-#         )
+    repo_name = repo_name.lower()
+    repo_vendor = repo_vendor.lower()
 
-#     if not repo_name:
-#         log.info(
-#             "No repo_name given. Commit hashes and filepaths will not be linkified."
-#         )
+    if not repo_url:
+        log.info(
+            "No repo_url given. Commit hashes and repository filepaths "
+            "(table_feature: file_link_git_repo, commit_hash_link) will not be linkified."
+        )
 
-#     repo_vendor_discovered = repo_name.lower()
-#     repo_vendor_configured = repo_vendor_configured.lower()
+    if not repo_name:
+        log.info(
+            "No repo_name given. Commit hashes and repository filepaths "
+            "(table_feature: file_link_git_repo, commit_hash_link) will not be linkified."
+        )
 
-#     if repo_vendor_discovered and repo_vendor_configured:
-#         if repo_vendor_configured != repo_vendor_discovered:
-#             log.warning(
-#                 f"Configured remote repo_vendor `{repo_vendor_configured}` differes from discovered repo_vendor `{repo_vendor_discovered}`. Using configured repo_vendor `{repo_vendor_configured}`."
-#             )
-#         repo_vendor = repo_vendor_configured
-#     elif repo_vendor_discovered and not repo_vendor_configured:
-#         log.debug(
-#             f"Remote repo_vendor not specified (see config `repo_vendor`), using `{repo_vendor_discovered}`."
-#         )
-#         repo_vendor = repo_vendor_discovered
-#     elif not repo_vendor_discovered and repo_vendor_configured:
-#         repo_vendor = repo_vendor_configured
+    if repo_name and repo_vendor:
+        if repo_vendor != repo_name:
+            log.warning(
+                f"Configured {repo_vendor=} differs from {repo_name=}. "
+                f"Using configured {repo_vendor=}."
+            )
+        usable_repo_vendor = repo_vendor
 
-#     # Unsetting not supported repo_vendor
-#     if repo_vendor and repo_vendor not in SUPPORTED_REMOTE_REPOS:
-#         log.info(
-#             f"Repository config.repo_vendor '{repo_vendor}' not supported. Only '{', '.join(SUPPORTED_REMOTE_REPOS.keys())}' supported. Commit hashes and filepaths will not be linkified."
-#         )
-#         repo_vendor = ""
+    elif repo_name and not repo_vendor:
+        log.debug(
+            f"Remote repo_vendor not specified (see config `repo_vendor`), using {repo_name=}."
+        )
+        usable_repo_vendor = repo_name
 
-#     return repo_vendor
+    elif not repo_name and repo_vendor:
+        usable_repo_vendor = repo_vendor
+
+    # Unsetting not supported repo_vendor
+    if repo_vendor and repo_vendor not in SUPPORTED_REMOTE_REPOS:
+        log.info(
+            f"Repository config.{repo_vendor=} not supported. "
+            f"Only `{', '.join(SUPPORTED_REMOTE_REPOS.keys())}` supported. "
+            f"Commit hashes and filepaths will not be linkified."
+        )
+        usable_repo_vendor = ""
+
+    return usable_repo_vendor
 
 
 def get_recent_changes(
