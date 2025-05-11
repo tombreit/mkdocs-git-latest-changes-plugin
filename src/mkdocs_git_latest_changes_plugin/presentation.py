@@ -15,7 +15,11 @@ env = Environment(loader=FileSystemLoader(template_dir))
 
 
 def render_table(
-    *, loginfos: List[Loginfo], table_features: List[str], timestamp_format: str
+    *,
+    loginfos: List[Loginfo],
+    table_features: List[str],
+    timestamp_format: str,
+    limit_to_docs_dir: bool = False,
 ) -> str:
     """
     Render markdown table using external Jinja2 template with configurable columns
@@ -35,7 +39,7 @@ def render_table(
         "author": "Author",
         "message": "Description",
         "file_link_git_repo": "File (Git)",
-        "page_path_link": "Page",
+        "page_path_link": "Page" if limit_to_docs_dir else "Page/File",
     }
 
     context = {

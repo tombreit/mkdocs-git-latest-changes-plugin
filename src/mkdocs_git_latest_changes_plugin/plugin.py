@@ -158,6 +158,7 @@ class GitLatestChangesPlugin(BasePlugin[GitLatestChangesPluginConfig]):
                 loginfos=git_loginfos,
                 table_features=self.config.table_features,
                 timestamp_format=self.config.timestamp_format,
+                limit_to_docs_dir=self.config.limit_to_docs_dir,
             )
 
             # 4. Append the history limit hint to the markdown table
