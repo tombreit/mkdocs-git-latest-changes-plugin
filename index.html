@@ -115,29 +115,72 @@ SPDX-License-Identifier: MIT
 <pre><code class="language-yml"># mkdocs.yml plugin configuration example
 plugins:
   - git-latest-changes:
-      limit_to_docs_dir: True  # [True|False], defaults to False
-      repo_vendor: gitea       # [github|gitlab|gitea], defaults to `repo_name`
-      enabled_on_serve: True   # [True|False], defaults to True
-      history_limit: 5         # [Integer, defaults to -1 (no history limit)]
+      limit_to_docs_dir: True
+      repo_vendor: gitea
+      enabled_on_serve: True
+      history_limit: 5
+      timestamp_format: &quot;%Y-%m-%d %H:%M&quot;
+      table_features:
+        - &quot;page_path_link&quot;
+        - &quot;timestamp&quot;
+        - &quot;author&quot;
+        - &quot;message&quot;
 </code></pre>
 <ul>
 <li>
-<p><code>repo_vendor</code></p>
-<p>Set the "vendor" of your remote repository (currently supported: <code>bitbucket</code>, <code>github</code>, <code>gitlab</code> and <code>gitea</code>) via <code>repo_vendor</code> to get linkified commit hashes and filepaths.</p>
+<p><code>limit_to_docs_dir</code></p>
+<p>Limit <code>&#123;&#123; latest_changes &#125;&#125;</code> to your pages in your <code>docs_dir</code> and exclude the git history information for other files from your project repository via plugin config <code>limit_to_docs_dir</code>.<br />
+Boolean, defaults to <code>False</code>.</p>
 </li>
 <li>
-<p><code>limit_to_docs_dir</code></p>
-<p>Limit <code>&#123;&#123; latest_changes &#125;&#125;</code> to your pages in your <code>docs_dir</code> and exclude the git history information for other files from your project repository via plugin config <code>limit_to_docs_dir</code>.</p>
+<p><code>repo_vendor</code></p>
+<p>Set the "vendor" of your remote repository (currently supported: <code>bitbucket</code>, <code>github</code>, <code>gitlab</code> and <code>gitea</code>) via <code>repo_vendor</code> to get linkified commit hashes and filepaths. If not set, <code>repo_name</code> is used.</p>
 </li>
 <li>
 <p><code>enabled_on_serve</code></p>
-<p>Not amused by slow builds during <code>serve</code> while developing your docs? Disable this plugin only when running MkDocs via <code>mkdocs serve</code> and only trigger this plugins functionality on builds (<code>mkdocs build</code>). Defaults to <code>True</code>.</p>
+<p>Not amused by slow builds during <code>serve</code> while developing your docs? Disable this plugin only when running MkDocs via <code>mkdocs serve</code> and only trigger this plugins functionality on builds (<code>mkdocs build</code>).<br />
+Boolean, defaults to <code>True</code>.</p>
 </li>
 <li>
 <p><code>history_limit</code></p>
-<p>Not interested in all the old commits? Limit the table of recent changes using <code>history_limit = N</code>. <code>N</code> should be a positive integer, negative values or zero disables this option.</p>
+<p>Not interested in all the old commits? Limit the table of recent changes using <code>history_limit = N</code>. <code>N</code> should be a positive integer, negative values or zero disables this option.<br />
+Integer, defaults to <code>-1</code>.</p>
+</li>
+<li>
+<p><code>timestamp_format</code></p>
+<p>Format of the timestamp in the generated recent changes table.<br />
+String, defaults to <code>%Y-%m-%d %H:%M:%S</code>.</p>
+</li>
+<li>
+<p><code>table_features</code></p>
+<p>The "table_features" define the columns and their order.<br />
+Available features:</p>
 </li>
 </ul>
+<div style="margin-left: 24px;">
+
+<pre><code class="language-yml">- &quot;filepath&quot;
+- &quot;file_link_git_repo&quot;
+- &quot;page_path_link&quot;
+- &quot;timestamp&quot;
+- &quot;author&quot;
+- &quot;message&quot;
+- &quot;commit_hash_link&quot;
+</code></pre>
+
+
+List, defaults to:
+
+
+<pre><code class="language-yaml">- &quot;file_link_git_repo&quot;
+- &quot;timestamp&quot;
+- &quot;author&quot;
+- &quot;message&quot;
+- &quot;commit_hash_link&quot;
+</code></pre>
+
+</div>
+
 <h2 id="hints">Hints</h2>
 <ul>
 <li>This plugin depends of having any commits in the current git branch.</li>
@@ -145,7 +188,22 @@ plugins:
 <li>For linked git commit hashes and filenames, the <a href="https://www.mkdocs.org/user-guide/configuration/#repo_url">MkDocs config variable <code>repo_url</code></a> must be set and point your repository.</li>
 <li>Relax warnings with <code>--no-strict</code> (via MkDocs <a href="https://www.mkdocs.org/user-guide/configuration/#strict">strict configuration</a>, <a href="https://www.mkdocs.org/user-guide/cli/">cli</a>), e.g. if a expected file is not in the git working tree.</li>
 <li>Log level: Request debug information for this plugin via MkDocs <code>--verbose / -v</code> command line flag.</li>
+<li>If you want to spare your audience git and the technical aspects of your repo: Configure your recent changes table e.g. via:</li>
 </ul>
+<div style="margin-left: 24px;">
+
+<pre><code class="language-yml">  - git-latest-changes:
+      limit_to_docs_dir: True
+      timestamp_format: &quot;%Y-%m-%d %H:%M&quot;
+      table_features:
+        - &quot;page_path_link&quot;
+        - &quot;timestamp&quot;
+        - &quot;author&quot;
+        - &quot;message&quot;
+</code></pre>
+
+</div>
+
 <h2 id="cicd">CI/CD</h2>
 <p>Use in a CI environment may require some tweaking and fixes situations where the git history is not available (e.g. <code>"HEAD is a detached symbolic reference as it points to &lt;commit hash&gt;</code>):</p>
 <pre><code class="language-yml"># GitLab / .gitlab-ci.yml
@@ -175,136 +233,171 @@ job:
 <table>
 <thead>
 <tr>
-<th>Filepath</th>
-<th>Timestamp</th>
+<th>Page/File</th>
+<th>Date</th>
 <th>Author</th>
-<th>Message</th>
+<th>Description</th>
 <th>Commit</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/docs/index.md">docs/index.md</a></td>
-<td>2025-03-07 00:01:15</td>
+<td>src/mkdocs_git_latest_changes_plugin/git_adapter.py</td>
+<td>2025-05-11 18:23:01</td>
 <td>Thomas Breitner</td>
-<td>Fixed indentation in YAML code blocks</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/cf2c8d03d77701804ec177eac6d1a3370b65a3a7">cf2c8d0</a></td>
+<td>datetime.date.fromisoformat only supported YYYY-MM-DD in Python&lt;3.11</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/a7c95d7e858023f518ca13389aa6444d7cd35db8">a7c95d7</a></td>
 </tr>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/mkdocs.yml">mkdocs.yml</a></td>
-<td>2025-03-06 23:20:59</td>
+<td>src/mkdocs_git_latest_changes_plugin/plugin.py</td>
+<td>2025-05-11 16:11:49</td>
 <td>Thomas Breitner</td>
-<td>Use readthedocs theme</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/718cf65133ca0a6718c86f6c5241dba04b08767a">718cf65</a></td>
+<td>Adjust column header</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/bb9805b4e6e23c7c6c733ab8b4aac81e08ccb23d">bb9805b</a></td>
 </tr>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/.github/FUNDING.yml">.github/FUNDING.yml</a></td>
-<td>2024-12-27 22:33:36</td>
+<td>src/mkdocs_git_latest_changes_plugin/presentation.py</td>
+<td>2025-05-11 16:11:49</td>
+<td>Thomas Breitner</td>
+<td>Adjust column header</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/bb9805b4e6e23c7c6c733ab8b4aac81e08ccb23d">bb9805b</a></td>
+</tr>
+<tr>
+<td>tests/test_mkdocs_git_latest_changes_plugin.py</td>
+<td>2025-05-11 16:08:34</td>
+<td>Thomas Breitner</td>
+<td>Split table_feature tests to three dedicated tests</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/113c37aef5820a7a54363a3032b96415f068a50d">113c37a</a></td>
+</tr>
+<tr>
+<td>src/mkdocs_git_latest_changes_plugin/models.py</td>
+<td>2025-05-10 10:55:46</td>
+<td>Thomas Breitner</td>
+<td>Re-enabled checking supported repository vendors and remote repo link builder</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/bf329bf9bf404fe41d56ca4fd7425acf2f475643">bf329bf</a></td>
+</tr>
+<tr>
+<td>src/mkdocs_git_latest_changes_plugin/templates/recent_changes_table.md.j2</td>
+<td>2025-05-10 10:55:46</td>
+<td>Thomas Breitner</td>
+<td>Re-enabled checking supported repository vendors and remote repo link builder</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/bf329bf9bf404fe41d56ca4fd7425acf2f475643">bf329bf</a></td>
+</tr>
+<tr>
+<td>mkdocs.yml</td>
+<td>2025-05-10 10:54:53</td>
+<td>Thomas Breitner</td>
+<td>Enabled commit hash link in demo</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/f16b78b73b50f1f743c880c6041f2d485b8fce2b">f16b78b</a></td>
+</tr>
+<tr>
+<td><a href="./">docs/index.md</a></td>
+<td>2025-05-09 22:14:53</td>
+<td>Thomas Breitner</td>
+<td>Cleanup, added some docs for new config options</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/d447e534e2a16d5f816e21fc754faf3481d89053">d447e53</a></td>
+</tr>
+<tr>
+<td>src/mkdocs_git_latest_changes_plugin/helpers.py</td>
+<td>2025-05-06 20:17:58</td>
+<td>Thomas Breitner</td>
+<td>Removed print statements</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/02d50f040ad39b4b7e2636416c2815f31fd025b7">02d50f0</a></td>
+</tr>
+<tr>
+<td>pyproject.toml</td>
+<td>2025-05-06 19:18:12</td>
+<td>Thomas Breitner</td>
+<td>Mention that jinja2 is already a dependency of MkDocs</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/e5d9c738f2c4093d85d730ef4fc532bcdd43c8fc">e5d9c73</a></td>
+</tr>
+<tr>
+<td>.github/FUNDING.yml</td>
+<td>2024-12-27 21:33:36</td>
 <td>Thomas Breitner</td>
 <td>Added funding</td>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/bc1b0e83faf3e5ecca24cb0ba59b44999b9d003e">bc1b0e8</a></td>
 </tr>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/src/mkdocs_git_latest_changes_plugin/plugin.py">src/mkdocs_git_latest_changes_plugin/plugin.py</a></td>
-<td>2024-10-16 21:34:59</td>
-<td>Thomas Breitner</td>
-<td>Feat: allow configuration of .git folder / repository root</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/03432454355aad7c6a9297a5bdc00c1847258a39">0343245</a></td>
-</tr>
-<tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/tests/test_mkdocs_git_latest_changes_plugin.py">tests/test_mkdocs_git_latest_changes_plugin.py</a></td>
-<td>2024-10-16 21:34:59</td>
-<td>Thomas Breitner</td>
-<td>Feat: allow configuration of .git folder / repository root</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/03432454355aad7c6a9297a5bdc00c1847258a39">0343245</a></td>
-</tr>
-<tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/.github/workflows/deploy.yml">.github/workflows/deploy.yml</a></td>
-<td>2024-10-16 21:20:16</td>
+<td>.github/workflows/deploy.yml</td>
+<td>2024-10-16 19:20:16</td>
 <td>Thomas Breitner</td>
 <td>Run tests regardless of branch, only run ghpages for the main branch</td>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/ed0c473716ead2ba9c2771dd469d3a65c2ca31c8">ed0c473</a></td>
 </tr>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/.github/workflows/ghpages.yml">.github/workflows/ghpages.yml</a></td>
-<td>2024-10-16 21:20:16</td>
+<td>.github/workflows/ghpages.yml</td>
+<td>2024-10-16 19:20:16</td>
 <td>Thomas Breitner</td>
 <td>Run tests regardless of branch, only run ghpages for the main branch</td>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/ed0c473716ead2ba9c2771dd469d3a65c2ca31c8">ed0c473</a></td>
 </tr>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/.github/workflows/tests.yml">.github/workflows/tests.yml</a></td>
-<td>2024-10-16 21:20:16</td>
+<td>.github/workflows/tests.yml</td>
+<td>2024-10-16 19:20:16</td>
 <td>Thomas Breitner</td>
 <td>Run tests regardless of branch, only run ghpages for the main branch</td>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/ed0c473716ead2ba9c2771dd469d3a65c2ca31c8">ed0c473</a></td>
 </tr>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/README.md">README.md</a></td>
-<td>2024-06-01 18:13:58</td>
+<td>README.md</td>
+<td>2024-06-01 16:13:58</td>
 <td>Thomas Breitner</td>
 <td>New config option: history_limit</td>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/e43a5632eaa511eb2fe54c9a326fc29e9a9f5d03">e43a563</a></td>
 </tr>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/.pre-commit-config.yaml">.pre-commit-config.yaml</a></td>
-<td>2024-06-01 16:02:26</td>
+<td>.pre-commit-config.yaml</td>
+<td>2024-06-01 14:02:26</td>
 <td>Thomas Breitner</td>
 <td>Bumped pre-commit hooks and freezed GitPython version</td>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/ff6373e83bd2391d5c0fbf1b11eba1cdbb9ec95a">ff6373e</a></td>
 </tr>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/pyproject.toml">pyproject.toml</a></td>
-<td>2024-06-01 16:02:26</td>
-<td>Thomas Breitner</td>
-<td>Bumped pre-commit hooks and freezed GitPython version</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/ff6373e83bd2391d5c0fbf1b11eba1cdbb9ec95a">ff6373e</a></td>
-</tr>
-<tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/docs/subdir/index.md">docs/subdir/index.md</a></td>
-<td>2024-01-12 11:42:24</td>
+<td><a href="subdir/">docs/subdir/index.md</a></td>
+<td>2024-01-12 10:42:24</td>
 <td>Thomas Breitner</td>
 <td>Added sub directory to test new config option</td>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/c987c897d1bc4a8fc942d49a23c382bc4e5a2558">c987c89</a></td>
 </tr>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/.gitignore">.gitignore</a></td>
-<td>2024-01-10 08:01:54</td>
+<td>.gitignore</td>
+<td>2024-01-10 07:01:54</td>
 <td>Thomas Breitner</td>
 <td>src-based directory layout</td>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/c9a468dc6175f3770ecba34d7ce420ff1473e4d0">c9a468d</a></td>
 </tr>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/src/mkdocs_git_latest_changes_plugin/__init__.py">src/mkdocs_git_latest_changes_plugin/<strong>init</strong>.py</a></td>
-<td>2024-01-10 08:01:54</td>
+<td>src/mkdocs_git_latest_changes_plugin/<strong>init</strong>.py</td>
+<td>2024-01-10 07:01:54</td>
 <td>Thomas Breitner</td>
 <td>src-based directory layout</td>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/c9a468dc6175f3770ecba34d7ce420ff1473e4d0">c9a468d</a></td>
 </tr>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/docs/test.md">docs/test.md</a></td>
-<td>2023-12-17 13:48:18</td>
+<td><a href="test/">docs/test.md</a></td>
+<td>2023-12-17 12:48:18</td>
 <td>Thomas Breitner</td>
 <td>Some prose for test.md</td>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/4b0cccf8cbcc19259584beba61f872c2e7d335a2">4b0cccf</a></td>
 </tr>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/LICENSE">LICENSE</a></td>
-<td>2023-12-17 13:45:29</td>
+<td>LICENSE</td>
+<td>2023-12-17 12:45:29</td>
 <td>Thomas Breitner</td>
 <td>Add traditional LICENSE file to allow github to pick it up</td>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/1b07bbb67c7c308e1527652b61850ada775a71d0">1b07bbb</a></td>
 </tr>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/LICENSES/CC0-1.0.txt">LICENSES/CC0-1.0.txt</a></td>
-<td>2023-12-02 19:16:43</td>
+<td>LICENSES/CC0-1.0.txt</td>
+<td>2023-12-02 18:16:43</td>
 <td>Thomas Breitner</td>
 <td>REUSE-compliance</td>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/a2981f6cfe912e3c9bd22fdaed10dd7f8194b9be">a2981f6</a></td>
 </tr>
 <tr>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/blob/main/LICENSES/MIT.txt">LICENSES/MIT.txt</a></td>
-<td>2023-12-02 19:16:43</td>
+<td>LICENSES/MIT.txt</td>
+<td>2023-12-02 18:16:43</td>
 <td>Thomas Breitner</td>
 <td>REUSE-compliance</td>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/a2981f6cfe912e3c9bd22fdaed10dd7f8194b9be">a2981f6</a></td>
@@ -362,5 +455,5 @@ job:
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-05-11 16:12:11.592510+00:00
+Build Date UTC : 2025-05-11 18:23:23.331892+00:00
 -->
