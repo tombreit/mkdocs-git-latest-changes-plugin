@@ -112,7 +112,7 @@ SPDX-License-Identifier: MIT
 <li>Enjoy your latest changes table rendered by your MkDocs theme.</li>
 </ul>
 <h2 id="configuration">Configuration</h2>
-<pre><code class="language-yml"># mkdocs.yml plugin configuration example
+<pre><code class="language-yaml"># mkdocs.yml plugin configuration example
 plugins:
   - git-latest-changes:
       limit_to_docs_dir: True
@@ -159,7 +159,8 @@ Available features:</p>
 </ul>
 <div style="margin-left: 24px;">
 
-<pre><code class="language-yml">- &quot;filepath&quot;
+
+<pre><code class="language-yaml">- &quot;filepath&quot;
 - &quot;file_link_git_repo&quot;
 - &quot;page_path_link&quot;
 - &quot;timestamp&quot;
@@ -179,6 +180,7 @@ List, defaults to:
 - &quot;commit_hash_link&quot;
 </code></pre>
 
+
 </div>
 
 <h2 id="hints">Hints</h2>
@@ -192,7 +194,8 @@ List, defaults to:
 </ul>
 <div style="margin-left: 24px;">
 
-<pre><code class="language-yml">  - git-latest-changes:
+
+<pre><code class="language-yaml">  - git-latest-changes:
       limit_to_docs_dir: True
       timestamp_format: &quot;%Y-%m-%d %H:%M&quot;
       table_features:
@@ -202,11 +205,12 @@ List, defaults to:
         - &quot;message&quot;
 </code></pre>
 
+
 </div>
 
 <h2 id="cicd">CI/CD</h2>
 <p>Use in a CI environment may require some tweaking and fixes situations where the git history is not available (e.g. <code>"HEAD is a detached symbolic reference as it points to &lt;commit hash&gt;</code>):</p>
-<pre><code class="language-yml"># GitLab / .gitlab-ci.yml
+<pre><code class="language-yaml"># GitLab / .gitlab-ci.yml
 job:
   script:
     # Returning to branch from detached HEAD
@@ -241,6 +245,13 @@ job:
 </tr>
 </thead>
 <tbody>
+<tr>
+<td><a href="./">docs/index.md</a></td>
+<td>2025-05-11 18:35:18</td>
+<td>Thomas Breitner</td>
+<td>Fixed YAML code blocks</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/305832a5c4bbee1802e59c0f6c150da0aeedeae8">305832a</a></td>
+</tr>
 <tr>
 <td>src/mkdocs_git_latest_changes_plugin/git_adapter.py</td>
 <td>2025-05-11 18:23:01</td>
@@ -289,13 +300,6 @@ job:
 <td>Thomas Breitner</td>
 <td>Enabled commit hash link in demo</td>
 <td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/f16b78b73b50f1f743c880c6041f2d485b8fce2b">f16b78b</a></td>
-</tr>
-<tr>
-<td><a href="./">docs/index.md</a></td>
-<td>2025-05-09 22:14:53</td>
-<td>Thomas Breitner</td>
-<td>Cleanup, added some docs for new config options</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/d447e534e2a16d5f816e21fc754faf3481d89053">d447e53</a></td>
 </tr>
 <tr>
 <td>src/mkdocs_git_latest_changes_plugin/helpers.py</td>
@@ -455,5 +459,5 @@ job:
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-05-11 18:25:33.655394+00:00
+Build Date UTC : 2025-05-11 18:35:39.042193+00:00
 -->
