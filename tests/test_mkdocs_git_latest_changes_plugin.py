@@ -2,12 +2,13 @@
 #
 # SPDX-License-Identifier: MIT
 
-# The method working_directory is copied from project timvink/mkdocs-git-authors-plugin
+# The method working_directory() is copied from project timvink/mkdocs-git-authors-plugin
 # and licensed under MIT. Thank you timvink.
 
 
 import re
 import os
+import html
 import shutil
 import subprocess
 
@@ -358,13 +359,143 @@ plugins:
         assert re.search(r"\d{2}\.\d{2}\.\d{4}", contents)
         assert not re.search(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}", contents)
 
-        # Test invalid format (should fail during build)
+        # Test invalid format: should fail
         config_file_path.write_text("""
 site_name: mkdocs-plugin-test
 strict: true
 plugins:
   - git-latest-changes:
       timestamp_format: "%invalid%"
+        """)
+
+        process = run_build(project.working_tree_dir)
+        assert process.returncode != 0
+
+
+def assert_feature_presence(*, contents, feature, commit_data, config):
+    """Assert that a specific feature is present in the HTML output"""
+    if feature == "timestamp":
+        timestamp_str = (
+            f"<td>{commit_data['commit_timestamp']:{config.timestamp_format}}</td>"
+        )
+        assert timestamp_str in contents, f"Timestamp {timestamp_str} not found"
+    elif feature == "author":
+        assert (
+            f"<td>{commit_data['commit_author_escaped']}</td>" in contents
+        ), "Author not found"
+    elif feature == "message":
+        assert commit_data["commit_msg"] in contents, "Commit message not found"
+    elif feature == "commit_hash_link":
+        # As we only test a minimal config without a remote repository,
+        # the commit hash is not linked.
+        hash_short = commit_data["commit_hash_short"]
+        assert f"<td>{hash_short}</td>" in contents, "Commit hash not found"
+    elif feature == "filepath":
+        assert f"<td>{commit_data['filepath']}</td>" in contents, "Filepath not found"
+    elif feature == "page_path_link":
+        assert (
+            f"<td>{commit_data['page_path_link']}</td>" in contents
+        ), "Page path link not found"
+    elif feature == "file_link_git_repo":
+        # This feature is not tested, makes only sense if a remote repository is set
+        pass
+
+
+def test_table_features_config(project: Repo):
+    """Test the table_features configuration option with various settings."""
+    from mkdocs_git_latest_changes_plugin.plugin import GitLatestChangesPluginConfig
+
+    config_file_path = Path(PRROJECT_CONFIG)
+    config = GitLatestChangesPluginConfig()
+
+    commit_message = "Test commit for table features"
+
+    # As we only have one page, on which there is also the latest changes marker,
+    # we just test that filepath
+    src_filepath = Path(DOCS_DIR) / f"{PAGE_W_LATEST_CHANGES_FILENAME}.md"
+    dest_filepath = Path(BUILD_DIR) / PAGE_W_LATEST_CHANGES_FILENAME / "index.html"
+
+    with working_directory(project.working_tree_dir):
+        # Create a page with the latest_changes marker
+        latest_changes_file_path = Path(project.working_tree_dir) / src_filepath
+        latest_changes_file_path.write_text("{{ latest_changes }}")
+
+        # Add file and make a commit
+        project.index.add([str(latest_changes_file_path)])
+        project.index.commit(commit_message)
+
+        commit_timestamp = project.head.commit.committed_datetime
+        commit_author = project.head.commit.author.name
+        commit_author_escaped = html.escape(commit_author)
+        commit_hash_short = project.head.commit.hexsha[:7]
+
+        # Test: Default configuration - all default features should be present
+        assert run_build(project.working_tree_dir)
+        latest_changes_page = Path(project.working_tree_dir) / dest_filepath
+        contents = latest_changes_page.read_text()
+
+        # Get the default table features from the plugin config
+        default_features = config.table_features
+
+        for feature in default_features:
+            assert_feature_presence(
+                contents=contents,
+                feature=feature,
+                commit_data={
+                    "commit_timestamp": commit_timestamp,
+                    "commit_author_escaped": commit_author_escaped,
+                    "commit_msg": commit_message,
+                    "commit_hash_short": commit_hash_short,
+                },
+                config=config,
+            )
+
+        # Test: All valid features
+        config_file_path.write_text("""
+site_name: mkdocs-plugin-test
+strict: true
+plugins:
+  - git-latest-changes:
+      table_features:
+        - filepath
+        - file_link_git_repo
+        - page_path_link
+        - timestamp
+        - author
+        - message
+        - commit_hash_link
+        """)
+
+        assert run_build(project.working_tree_dir)
+        contents = latest_changes_page.read_text()
+
+        all_features = config.table_features
+
+        for feature in all_features:
+            assert_feature_presence(
+                contents=contents,
+                feature=feature,
+                commit_data={
+                    "commit_timestamp": commit_timestamp,
+                    "commit_author_escaped": commit_author_escaped,
+                    "commit_msg": commit_message,
+                    "commit_hash_short": commit_hash_short,
+                    "filepath": str(src_filepath),
+                    "file_link_git_repo": str(src_filepath),
+                    "page_path_link": str(dest_filepath),
+                },
+                config=config,
+            )
+
+        # Test: Invalid configuration - should fail
+        config_file_path.write_text("""
+site_name: mkdocs-plugin-test
+strict: true
+plugins:
+  - git-latest-changes:
+      table_features:
+        - invalid_feature
+        - another_invalid
         """)
 
         process = run_build(project.working_tree_dir)
