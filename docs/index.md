@@ -22,7 +22,7 @@ MkDocs plugin that allows you to display a list of recently modified pages from 
 
 ## Configuration
 
-```yml
+```yaml
 # mkdocs.yml plugin configuration example
 plugins:
   - git-latest-changes:
@@ -68,7 +68,8 @@ plugins:
     Available features:
 
 <div style="margin-left: 24px;">
-```yml
+
+```yaml
 - "filepath"
 - "file_link_git_repo"
 - "page_path_link"
@@ -87,6 +88,7 @@ List, defaults to:
 - "message"
 - "commit_hash_link"
 ```
+
 </div>
 
 ## Hints
@@ -99,7 +101,8 @@ List, defaults to:
 - If you want to spare your audience git and the technical aspects of your repo: Configure your recent changes table e.g. via:
 
 <div style="margin-left: 24px;">
-```yml
+
+```yaml
   - git-latest-changes:
       limit_to_docs_dir: True
       timestamp_format: "%Y-%m-%d %H:%M"
@@ -109,13 +112,14 @@ List, defaults to:
         - "author"
         - "message"
 ```
+
 </div>
 
 ## CI/CD
 
 Use in a CI environment may require some tweaking and fixes situations where the git history is not available (e.g. `"HEAD is a detached symbolic reference as it points to <commit hash>`):
 
-```yml
+```yaml
 # GitLab / .gitlab-ci.yml
 job:
   script:
