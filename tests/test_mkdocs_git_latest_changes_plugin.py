@@ -393,25 +393,25 @@ def assert_feature_presence(*, contents, feature, commit_data, config):
     elif feature == "filepath":
         assert f"<td>{commit_data['filepath']}</td>" in contents, "Filepath not found"
     elif feature == "page_path_link":
+        # Too lazy to get the actual relative path
         assert (
-            f"<td>{commit_data['page_path_link']}</td>" in contents
+            f'<td><a href="./">{commit_data["filepath"]}</a></td>' in contents
         ), "Page path link not found"
     elif feature == "file_link_git_repo":
         # This feature is not tested, makes only sense if a remote repository is set
         pass
 
 
-def test_table_features_config(project: Repo):
-    """Test the table_features configuration option with various settings."""
+@pytest.fixture
+def table_features_setup(project):
+    """Setup fixture for table_features tests."""
     from mkdocs_git_latest_changes_plugin.plugin import GitLatestChangesPluginConfig
 
-    config_file_path = Path(PRROJECT_CONFIG)
     config = GitLatestChangesPluginConfig()
-
+    config_file_path = Path(PRROJECT_CONFIG)
     commit_message = "Test commit for table features"
 
-    # As we only have one page, on which there is also the latest changes marker,
-    # we just test that filepath
+    # As we only have one page, on which there is also the latest changes marker
     src_filepath = Path(DOCS_DIR) / f"{PAGE_W_LATEST_CHANGES_FILENAME}.md"
     dest_filepath = Path(BUILD_DIR) / PAGE_W_LATEST_CHANGES_FILENAME / "index.html"
 
@@ -429,29 +429,49 @@ def test_table_features_config(project: Repo):
         commit_author_escaped = html.escape(commit_author)
         commit_hash_short = project.head.commit.hexsha[:7]
 
-        # Test: Default configuration - all default features should be present
+    return {
+        "config": config,
+        "config_file_path": config_file_path,
+        "commit_data": {
+            "commit_timestamp": commit_timestamp,
+            "commit_author_escaped": commit_author_escaped,
+            "commit_msg": commit_message,
+            "commit_hash_short": commit_hash_short,
+            "filepath": str(src_filepath),
+            "file_link_git_repo": str(src_filepath),
+            "page_path_link": str(dest_filepath),
+        },
+        "src_filepath": src_filepath,
+        "dest_filepath": dest_filepath,
+    }
+
+
+def test_table_features_default_config(project, table_features_setup):
+    """Test table features with default configuration."""
+    setup = table_features_setup
+
+    with working_directory(project.working_tree_dir):
         assert run_build(project.working_tree_dir)
-        latest_changes_page = Path(project.working_tree_dir) / dest_filepath
+        latest_changes_page = Path(project.working_tree_dir) / setup["dest_filepath"]
         contents = latest_changes_page.read_text()
 
-        # Get the default table features from the plugin config
-        default_features = config.table_features
-
-        for feature in default_features:
+        # Check all default features
+        for feature in setup["config"].table_features:
             assert_feature_presence(
                 contents=contents,
                 feature=feature,
-                commit_data={
-                    "commit_timestamp": commit_timestamp,
-                    "commit_author_escaped": commit_author_escaped,
-                    "commit_msg": commit_message,
-                    "commit_hash_short": commit_hash_short,
-                },
-                config=config,
+                commit_data=setup["commit_data"],
+                config=setup["config"],
             )
 
-        # Test: All valid features
-        config_file_path.write_text("""
+
+def test_table_features_all_features(project, table_features_setup):
+    """Test table features with all valid features explicitly configured."""
+    setup = table_features_setup
+
+    with working_directory(project.working_tree_dir):
+        # Configure all valid features
+        setup["config_file_path"].write_text("""
 site_name: mkdocs-plugin-test
 strict: true
 plugins:
@@ -467,28 +487,36 @@ plugins:
         """)
 
         assert run_build(project.working_tree_dir)
+        latest_changes_page = Path(project.working_tree_dir) / setup["dest_filepath"]
         contents = latest_changes_page.read_text()
 
-        all_features = config.table_features
+        # Check all features are present
+        all_features = [
+            "filepath",
+            "file_link_git_repo",
+            "page_path_link",
+            "timestamp",
+            "author",
+            "message",
+            "commit_hash_link",
+        ]
 
         for feature in all_features:
             assert_feature_presence(
                 contents=contents,
                 feature=feature,
-                commit_data={
-                    "commit_timestamp": commit_timestamp,
-                    "commit_author_escaped": commit_author_escaped,
-                    "commit_msg": commit_message,
-                    "commit_hash_short": commit_hash_short,
-                    "filepath": str(src_filepath),
-                    "file_link_git_repo": str(src_filepath),
-                    "page_path_link": str(dest_filepath),
-                },
-                config=config,
+                commit_data=setup["commit_data"],
+                config=setup["config"],
             )
 
-        # Test: Invalid configuration - should fail
-        config_file_path.write_text("""
+
+def test_table_features_invalid_config(project, table_features_setup):
+    """Test table features with invalid features (should fail)."""
+    setup = table_features_setup
+
+    with working_directory(project.working_tree_dir):
+        # Configure with invalid features
+        setup["config_file_path"].write_text("""
 site_name: mkdocs-plugin-test
 strict: true
 plugins:
