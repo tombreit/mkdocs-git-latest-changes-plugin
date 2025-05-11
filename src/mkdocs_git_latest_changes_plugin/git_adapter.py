@@ -131,7 +131,12 @@ def get_recent_changes(
                 sanitize_string(loginfo) for loginfo in loginfo_raw.split(SEP_UNICODE)
             ]
 
-            timestamp_obj = datetime.fromisoformat(loginfo_safe[0])
+            # https://docs.python.org/3/library/datetime.html#datetime.date.fromisoformat
+            # Changed in version 3.11: Previously, this method only supported the format YYYY-MM-DD.
+            timestamp_str = loginfo_safe[0]
+            if timestamp_str.endswith("Z"):
+                timestamp_str = timestamp_str.replace("Z", "+00:00")
+            timestamp_obj = datetime.fromisoformat(timestamp_str)
 
             loginfo = Loginfo(
                 filepath=file,
