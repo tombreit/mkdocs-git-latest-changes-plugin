@@ -313,3 +313,59 @@ def test_mkdocs_w_git_dir_in_parent_dir_config(project):
 
         assert "{{ latest_changes }}" not in contents
         assert commit_message in contents
+
+
+def test_timestamp_format_config(project: Repo):
+    """Test that the timestamp_format config option correctly formats timestamps and fails for invalid formats."""
+    with working_directory(project.working_tree_dir):
+        # Create a page with the latest_changes marker
+        latest_changes_file_path = (
+            Path(project.working_tree_dir)
+            / DOCS_DIR
+            / f"{PAGE_W_LATEST_CHANGES_FILENAME}.md"
+        )
+        latest_changes_file_path.write_text("{{ latest_changes }}")
+
+        # Add file and make a commit
+        project.index.add([str(latest_changes_file_path)])
+        project.index.commit("Added latest changes page")
+
+        # Test default format
+        assert run_build(project.working_tree_dir)
+        latest_changes_page = (
+            Path(project.working_tree_dir)
+            / BUILD_DIR
+            / PAGE_W_LATEST_CHANGES_FILENAME
+            / "index.html"
+        )
+        contents = latest_changes_page.read_text()
+        # Default format is "%Y-%m-%d %H:%M:%S", e.g., "2023-01-01 12:34:56"
+        assert re.search(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}", contents)
+
+        # Test custom format
+        config_file_path = Path(PRROJECT_CONFIG)
+        config_file_path.write_text("""
+site_name: mkdocs-plugin-test
+strict: true
+plugins:
+  - git-latest-changes:
+      timestamp_format: "%d.%m.%Y"
+        """)
+
+        assert run_build(project.working_tree_dir)
+        contents = latest_changes_page.read_text()
+        # Should now match custom format, e.g., "01.01.2023"
+        assert re.search(r"\d{2}\.\d{2}\.\d{4}", contents)
+        assert not re.search(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}", contents)
+
+        # Test invalid format (should fail during build)
+        config_file_path.write_text("""
+site_name: mkdocs-plugin-test
+strict: true
+plugins:
+  - git-latest-changes:
+      timestamp_format: "%invalid%"
+        """)
+
+        process = run_build(project.working_tree_dir)
+        assert process.returncode != 0
