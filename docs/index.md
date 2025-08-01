@@ -119,6 +119,8 @@ List, defaults to:
 
 Use in a CI environment may require some tweaking and fixes situations where the git history is not available (e.g. `"HEAD is a detached symbolic reference as it points to <commit hash>`):
 
+### Gitlab
+
 ```yaml
 # GitLab / .gitlab-ci.yml
 job:
@@ -135,6 +137,26 @@ job:
 
 - [1] <https://docs.gitlab.com/ee/ci/runners/configure_runners.html#shallow-cloning>
 - [2] <https://docs.gitlab.com/ee/ci/runners/configure_runners.html#git-strategy>
+
+</small>
+
+### Github
+
+```yaml
+# Github / .github/workflows/build.yml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }} # [1]
+```
+
+<small markdown>
+
+- [1] <https://github.com/actions/checkout?tab=readme-ov-file#usage>
 
 </small>
 
