@@ -45,6 +45,12 @@
     <li class="toctree-l2"><a class="reference internal" href="#hints">Hints</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#cicd">CI/CD</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#gitlab">Gitlab</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#github">Github</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#latest-changes-demo">Latest changes demo</a>
         <ul>
@@ -210,6 +216,7 @@ List, defaults to:
 
 <h2 id="cicd">CI/CD</h2>
 <p>Use in a CI environment may require some tweaking and fixes situations where the git history is not available (e.g. <code>"HEAD is a detached symbolic reference as it points to &lt;commit hash&gt;</code>):</p>
+<h3 id="gitlab">Gitlab</h3>
 <pre><code class="language-yaml"># GitLab / .gitlab-ci.yml
 job:
   script:
@@ -224,6 +231,22 @@ job:
 <ul>
 <li>[1] <a href="https://docs.gitlab.com/ee/ci/runners/configure_runners.html#shallow-cloning">https://docs.gitlab.com/ee/ci/runners/configure_runners.html#shallow-cloning</a></li>
 <li>[2] <a href="https://docs.gitlab.com/ee/ci/runners/configure_runners.html#git-strategy">https://docs.gitlab.com/ee/ci/runners/configure_runners.html#git-strategy</a></li>
+</ul>
+<p></small></p>
+<h3 id="github">Github</h3>
+<pre><code class="language-yaml"># Github / .github/workflows/build.yml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }} # [1]
+</code></pre>
+<p><small markdown></p>
+<ul>
+<li>[1] <a href="https://github.com/actions/checkout?tab=readme-ov-file#usage">https://github.com/actions/checkout?tab=readme-ov-file#usage</a></li>
 </ul>
 <p></small></p>
 <h2 id="latest-changes-demo">Latest changes demo</h2>
@@ -247,10 +270,10 @@ job:
 <tbody>
 <tr>
 <td><a href="./">docs/index.md</a></td>
-<td>2025-05-11 18:35:18</td>
-<td>Thomas Breitner</td>
-<td>Fixed YAML code blocks</td>
-<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/305832a5c4bbee1802e59c0f6c150da0aeedeae8">305832a</a></td>
+<td>2025-08-01 00:04:51</td>
+<td>tuxuser</td>
+<td>docs: Add CI workflow snippet for github</td>
+<td><a href="https://github.com/tombreit/mkdocs-git-latest-changes-plugin/commit/1ab0ccbfa089ac9c9292561dcf264955134dc2df">1ab0ccb</a></td>
 </tr>
 <tr>
 <td>src/mkdocs_git_latest_changes_plugin/git_adapter.py</td>
@@ -459,5 +482,5 @@ job:
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-05-11 21:45:10.811747+00:00
+Build Date UTC : 2025-08-01 06:54:36.718940+00:00
 -->
