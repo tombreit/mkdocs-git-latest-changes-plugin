@@ -110,9 +110,9 @@ def get_recent_changes(
     # [0]: %cd : commiter date
     # [1]: %h  : abbreviated commit hash
     # [2]: %H  : full commit hash
-    # [3]: %an : author name
+    # [3]: %aN : author name (respecting .mailmap)
     # [4]: %s  : subject
-    git_log_format = f"%cd{SEP_HEX}%h{SEP_HEX}%H{SEP_HEX}%an{SEP_HEX}%s"
+    git_log_format = f"%cd{SEP_HEX}%h{SEP_HEX}%H{SEP_HEX}%aN{SEP_HEX}%s"
 
     loginfos = []
     for file in files:
