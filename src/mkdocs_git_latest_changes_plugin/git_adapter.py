@@ -83,6 +83,7 @@ def get_recent_changes(
 
     try:
         repo = Repo(search_parent_directories=True)
+        repo.config_writer().set_value("core", "quotepath", "false").release()
         branch = repo.active_branch
         git = repo.git
     except InvalidGitRepositoryError as invalid_repo_error:
@@ -99,8 +100,10 @@ def get_recent_changes(
         raise PluginError(msg) from error
     else:
         log.debug(f"Initialized repo `{repo}`, branch `{branch}`...")
-        files = git.ls_files(limit_to_docs_dir)
-        files = files.split("\n")
+        files = git.ls_files("-z", limit_to_docs_dir)
+        files = files.split("\0")
+        # Remove empty / whitespace-only entries created by the split (e.g. trailing NUL)
+        files = [f for f in files if f.strip()]
 
     log.info(f"{len(files)} files found in git index and working tree.")
 
@@ -120,11 +123,13 @@ def get_recent_changes(
 
         try:
             loginfo_raw = git.log(
+                "-z",
                 # Limit the number of commits to output; short form would be "-1"
                 "--max-count=1",
                 f"--pretty=format:{git_log_format}",
                 "--date=iso8601-strict-local",
-                file,
+                "--",
+                str(file),
             )
 
             loginfo_safe = [

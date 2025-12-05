@@ -677,3 +677,50 @@ plugins:
         # now appear as "John Doe" in the output due to .mailmap
         # Since we only show author and message, we can look for the consolidated name
         assert "John Doe" in contents
+
+
+@pytest.mark.parametrize(
+    "special_filename",
+    [
+        "normal.md",
+        "café.md",
+        "façade.md",
+        "niño.md",
+        "crème brûlée.md",
+        "straße.md",
+        "über.md",
+        "文件名.md",
+        "имя файла.md",
+        "md.اسم الملف",
+        "créer-projet-test.png",
+    ],
+)
+def test_special_characters_in_filenames(project: Repo, special_filename):
+    """Test MkDocs build with docs/ files containing special characters."""
+    with working_directory(project.working_tree_dir):
+        special_file = Path(project.working_tree_dir) / DOCS_DIR / special_filename
+        special_file.write_text("# Special chars")
+        project.index.add([str(special_file)])
+        project.index.commit(f"Add file {special_filename}")
+
+        # Add latest_changes marker page
+        latest_changes_file = (
+            Path(project.working_tree_dir)
+            / DOCS_DIR
+            / f"{PAGE_W_LATEST_CHANGES_FILENAME}.md"
+        )
+        latest_changes_file.write_text("{{ latest_changes }}")
+        project.index.add([str(latest_changes_file)])
+        project.index.commit("Add latest changes page")
+
+        assert run_build(project.working_tree_dir)
+
+        latest_changes_page = (
+            Path(project.working_tree_dir)
+            / BUILD_DIR
+            / PAGE_W_LATEST_CHANGES_FILENAME
+            / "index.html"
+        )
+        contents = latest_changes_page.read_text()
+        # The special filename should appear in the output table
+        assert special_filename in contents
