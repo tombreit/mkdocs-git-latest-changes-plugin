@@ -541,13 +541,18 @@ def test_mailmap_support(project: Repo):
         )
         latest_changes_file_path.write_text("{{ latest_changes }}")
 
-        # Commit with one author identity  
+        # Commit with one author identity
         project.index.add([str(latest_changes_file_path)])
         project.index.commit("First commit by John Doe")
 
         # Change git config to use different author identity for next commit
-        subprocess.run(["git", "config", "user.name", "J. Doe"], cwd=project.working_tree_dir)
-        subprocess.run(["git", "config", "user.email", "john.doe@company.com"], cwd=project.working_tree_dir)
+        subprocess.run(
+            ["git", "config", "user.name", "J. Doe"], cwd=project.working_tree_dir
+        )
+        subprocess.run(
+            ["git", "config", "user.email", "john.doe@company.com"],
+            cwd=project.working_tree_dir,
+        )
 
         # Create a different file to ensure we can track both commits
         test_file_path = Path(project.working_tree_dir) / DOCS_DIR / "test.md"
@@ -571,7 +576,9 @@ def test_mailmap_support(project: Repo):
 
         # Now create a .mailmap file to consolidate the authors
         mailmap_path = Path(project.working_tree_dir) / ".mailmap"
-        mailmap_path.write_text("John Doe <author@example.com> J. Doe <john.doe@company.com>\n")
+        mailmap_path.write_text(
+            "John Doe <author@example.com> J. Doe <john.doe@company.com>\n"
+        )
 
         # Add and commit the .mailmap file (this will be done by "J. Doe" identity)
         project.index.add([str(mailmap_path)])
@@ -583,10 +590,10 @@ def test_mailmap_support(project: Repo):
 
         # The most recent commit should now show "John Doe" instead of "J. Doe" due to mailmap
         assert "John Doe" in contents_with_mailmap
-        
+
         # We should no longer see "J. Doe" in the author column (it should be mapped to "John Doe")
         # Note: We need to be careful as "J. Doe" might appear in commit messages
-        
+
         # Let's verify the table structure is correct
         assert "{{ latest_changes }}" not in contents_with_mailmap
         assert "<table" in contents_with_mailmap
@@ -616,24 +623,38 @@ plugins:
         latest_changes_file_path.write_text("{{ latest_changes }}")
 
         # Set up initial author and commit
-        subprocess.run(["git", "config", "user.name", "John Doe"], cwd=project.working_tree_dir)
-        subprocess.run(["git", "config", "user.email", "john@example.com"], cwd=project.working_tree_dir)
+        subprocess.run(
+            ["git", "config", "user.name", "John Doe"], cwd=project.working_tree_dir
+        )
+        subprocess.run(
+            ["git", "config", "user.email", "john@example.com"],
+            cwd=project.working_tree_dir,
+        )
         project.index.add([str(latest_changes_file_path)])
         project.index.commit("Initial commit")
 
         # Change to different author identity
-        subprocess.run(["git", "config", "user.name", "J. Doe"], cwd=project.working_tree_dir)
-        subprocess.run(["git", "config", "user.email", "john.doe@company.com"], cwd=project.working_tree_dir)
+        subprocess.run(
+            ["git", "config", "user.name", "J. Doe"], cwd=project.working_tree_dir
+        )
+        subprocess.run(
+            ["git", "config", "user.email", "john.doe@company.com"],
+            cwd=project.working_tree_dir,
+        )
 
         # Create another file and commit with different identity
-        test_file_path = Path(project.working_tree_dir) / DOCS_DIR / "different_author.md"
+        test_file_path = (
+            Path(project.working_tree_dir) / DOCS_DIR / "different_author.md"
+        )
         test_file_path.write_text("# File by different author")
         project.index.add([str(test_file_path)])
         project.index.commit("Commit by alternate identity")
 
         # Create .mailmap BEFORE building
         mailmap_path = Path(project.working_tree_dir) / ".mailmap"
-        mailmap_path.write_text("John Doe <john@example.com> J. Doe <john.doe@company.com>\n")
+        mailmap_path.write_text(
+            "John Doe <john@example.com> J. Doe <john.doe@company.com>\n"
+        )
         project.index.add([str(mailmap_path)])
         project.index.commit("Add mailmap")
 
@@ -652,7 +673,7 @@ plugins:
         assert "{{ latest_changes }}" not in contents
         assert "<table" in contents
 
-        # The key test: verify that commits that were originally by "J. Doe" 
+        # The key test: verify that commits that were originally by "J. Doe"
         # now appear as "John Doe" in the output due to .mailmap
         # Since we only show author and message, we can look for the consolidated name
         assert "John Doe" in contents
